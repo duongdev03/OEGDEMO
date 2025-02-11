@@ -18,7 +18,7 @@ const AccsetManagement = () => {
         {
             title: 'Mã tài sản BIDV',
             dataIndex: 'assetCode',
-            width: '15%',
+            width: '10%',
         },
         {
             title: 'CIF KH vay',
@@ -29,7 +29,7 @@ const AccsetManagement = () => {
             title: 'Tên KH',
             dataIndex: 'name',
             // render: (name) => `${name.first} ${name.last}`,
-            width: '20%',
+            width: '15%',
         },
         {
             title: 'CIF bên đảm bảo',
@@ -40,7 +40,7 @@ const AccsetManagement = () => {
             title: 'Tên chủ tài sản',
             dataIndex: 'owner',
             // render: (owner) => `${owner.first} ${owner.last}`,
-            width: '20%',
+            width: '15%',
         },
         {
             title: 'Nơi đăng ký GDBĐ',
@@ -50,7 +50,7 @@ const AccsetManagement = () => {
         {
             title: 'tình trạng tài sản',
             dataIndex: 'status',
-            width: '15%',
+            width: '10%',
         },
         {
             title: 'tính chất pháp lý',
