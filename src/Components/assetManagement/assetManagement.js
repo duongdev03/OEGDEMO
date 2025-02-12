@@ -255,7 +255,7 @@ const AccsetManagement = () => {
                 </ul>
             </nav>
 
-            <h2 style={{ marginLeft: 20, marginTop: 50 }}>Quản lý tài sản đảm bảo</h2>
+            <h2 className={styles.title}>Quản lý tài sản đảm bảo</h2>
             <Space style={{ marginBottom: 16, marginLeft: 30 }} wrap>
                 <Input
                     placeholder="Mã tài sản BIDV"
