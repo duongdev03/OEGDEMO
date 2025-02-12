@@ -267,7 +267,12 @@ const AccsetManagement = () => {
                 <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>Tìm kiếm</Button>
             </Space>
             <Space style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16, marginRight: 20 }} wrap>
-                <Button type="primary" icon={<PlusOutlined />}>Thêm mới</Button>
+                <Button 
+                    onClick={() => navigate('/addCollateral')}
+                    type="primary" 
+                    icon={<PlusOutlined />}>           
+                    Thêm mới
+                </Button>
                 <Button icon={<FileExcelOutlined />}>Xuất file</Button>
             </Space>
             <Table

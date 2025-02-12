@@ -217,7 +217,7 @@ const AssetDetail = () => {
                 <ul className={styles.nav}>
                     <li><Link to="/"><HomeOutlined />Trang chủ <RightOutlined /></Link></li>
                     <li><Link to="/AssetManagement">Quản lý tài sản <RightOutlined /></Link></li>
-                    <li><Link className={styles.textDetail} to={`/AssetDetail/${assetCode}`}>Chi tiết</Link></li>
+                    <li><Link to={`/AssetDetail/${assetCode}`}>Chi tiết</Link></li>
                 </ul>
             </nav>
 
