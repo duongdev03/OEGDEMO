@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Table, Input, Select, Button, Space } from 'antd';
 import { HomeOutlined, RightOutlined, EllipsisOutlined, FileExcelOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import styles from './AssetManagement.module.css';
+import * as XLSX from 'xlsx';
+
 const { Option } = Select;
 
 
@@ -210,6 +212,39 @@ const AccsetManagement = () => {
         }));
     };
 
+    const handleExport = () => {
+        const columnTitleMapping = {
+            stt: 'STT',
+            assetCode: 'Mã tài sản BIDV',
+            cif: 'CIF KH vay',
+            name: 'Tên KH',
+            cifGuarantor: 'CIF bên đảm bảo',
+            owner: 'Tên chủ tài sản',
+            place: 'Nơi đăng ký GDBĐ',
+            status: 'Tình trạng tài sản',
+            legal: 'Tính chất pháp lý',
+            type: 'Loại công trình',
+            statusClim: 'Trạng thái hồ sơ trên CLIM',
+        };
+
+        const transformedData = data.map(item => {
+            const transformedItem = {};
+            for (const key in item) {
+                if (columnTitleMapping[key]) {
+                    transformedItem[columnTitleMapping[key]] = item[key];
+                } else {
+                    transformedItem[key] = item[key];
+                }
+            }
+            return transformedItem;
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(transformedData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Assets");
+        XLSX.writeFile(workbook, "assets.xlsx");
+    };
+
     return (
 
         <>
@@ -273,7 +308,7 @@ const AccsetManagement = () => {
                     icon={<PlusOutlined />}>           
                     Thêm mới
                 </Button>
-                <Button icon={<FileExcelOutlined />}>Xuất file</Button>
+                <Button icon={<FileExcelOutlined />} onClick={handleExport}>Xuất file</Button>
             </Space>
             <Table
                 columns={columns}
