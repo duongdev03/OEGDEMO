@@ -1,9 +1,9 @@
 import { Routes, Route } from "react-router-dom";
-import HomePage from "./Components/HomePages/home";
-import AssetManagement from "./Components/assetManagement/assetManagement";
-import AssetDetail from "./Components/assetManagement/detailAndUpdate";
-import AddCollateral from "./Components/assetManagement/addCollateral";
-import DynamicTitle from "./Components/DynamicTitle";
+import HomePage from "./Pages/Home";
+import AssetManagement from "./Pages/AssetManagement";
+import AssetDetail from "./Pages/AssetDetail";
+import AddCollateral from "./Pages/AddCollateral";
+import DynamicTitle from "./Pages/DynamicTitle";
 
 function App() {
   return (
