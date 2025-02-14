@@ -1,12 +1,13 @@
 import { Link, useParams } from "react-router-dom";
 import { HomeOutlined, RightOutlined, EditOutlined, HistoryOutlined, SyncOutlined } from '@ant-design/icons';
 import { Button, Card, Space, Input, Form, Modal } from 'antd';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import styles from './DetailAndUpdate.module.css';
 
 const AssetDetail = () => {
     const { assetCode } = useParams();
-    const initialState = {
+
+    const initialBasicInfo = useMemo(() => ({
         assetCode: assetCode,
         brandCode: '',
         brandName: '',
@@ -15,7 +16,10 @@ const AssetDetail = () => {
         CIFCode: '',
         customerName: '',
         CIFGuarantor: '',
-        ownerName: '',
+        ownerName: ''
+    }), [assetCode]);
+
+    const initialAdditionalInfo = useMemo(() => ({
         registrationPlace: '',
         notaryPlace: '',
         province: '',
@@ -29,7 +33,10 @@ const AssetDetail = () => {
         actualDistrict: '',
         actualWard: '',
         actualHouseNumber: '',
-        actualProjectName: '',
+        actualProjectName: ''
+    }), []);
+
+    const initialDetailInfo = useMemo(() => ({
         certificateNumber: '',
         frontage: '',
         alleyWidth: '',
@@ -46,7 +53,10 @@ const AssetDetail = () => {
         unitPrice: '',
         constructionType: '',
         constructionName: '',
-        constructionArea: '',
+        constructionArea: ''
+    }), []);
+
+    const initialValuationResult = useMemo(() => ({
         valuationDate: '',
         longitude: '',
         latitude: '',
@@ -54,8 +64,12 @@ const AssetDetail = () => {
         noInfoReason: '',
         climStatus: '',
         climDetails: ''
-    }
-    const [formData, setFormData] = useState(initialState);
+    }), []);
+
+    const [basicInfo, setBasicInfo] = useState(initialBasicInfo);
+    const [additionalInfo, setAdditionalInfo] = useState(initialAdditionalInfo);
+    const [detailInfo, setDetailInfo] = useState(initialDetailInfo);
+    const [valuationResult, setValuationResult] = useState(initialValuationResult);
     const [isChanged, setIsChanged] = useState({
         basicInfo: false,
         additionalInfo: false,
@@ -63,13 +77,37 @@ const AssetDetail = () => {
         valuationResult: false
     });
 
-    const handleChange = (e) => {
+    const handleBasicInfoChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
+        setBasicInfo((prev) => ({
             ...prev,
             [name]: value
         }));
-    }
+    };
+
+    const handleAdditionalInfoChange = (e) => {
+        const { name, value } = e.target;
+        setAdditionalInfo((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleDetailInfoChange = (e) => {
+        const { name, value } = e.target;
+        setDetailInfo((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleValuationResultChange = (e) => {
+        const { name, value } = e.target;
+        setValuationResult((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
     const showModal = (type) => {
         Modal[type]({
@@ -93,115 +131,10 @@ const AssetDetail = () => {
     };
 
     useEffect(() => {
-        const basicInfoChanged = JSON.stringify({
-            assetCode: formData.assetCode,
-            brandCode: formData.brandCode,
-            brandName: formData.brandName,
-            managementRoom: formData.managementRoom,
-            nearestAppraiser: formData.nearestAppraiser,
-            CIFCode: formData.CIFCode,
-            customerName: formData.customerName,
-            CIFGuarantor: formData.CIFGuarantor,
-            ownerName: formData.ownerName
-        }) !== JSON.stringify({
-            assetCode: initialState.assetCode,
-            brandCode: initialState.brandCode,
-            brandName: initialState.brandName,
-            managementRoom: initialState.managementRoom,
-            nearestAppraiser: initialState.nearestAppraiser,
-            CIFCode: initialState.CIFCode,
-            customerName: initialState.customerName,
-            CIFGuarantor: initialState.CIFGuarantor,
-            ownerName: initialState.ownerName
-        });
-
-        const additionalInfoChanged = JSON.stringify({
-            registrationPlace: formData.registrationPlace,
-            notaryPlace: formData.notaryPlace,
-            province: formData.province,
-            district: formData.district,
-            ward: formData.ward,
-            houseNumber: formData.houseNumber,
-            legalProjectName: formData.legalProjectName,
-            assetStatus: formData.assetStatus,
-            legalStatus: formData.legalStatus,
-            actualProvince: formData.actualProvince,
-            actualDistrict: formData.actualDistrict,
-            actualWard: formData.actualWard,
-            actualHouseNumber: formData.actualHouseNumber,
-            actualProjectName: formData.actualProjectName
-        }) !== JSON.stringify({
-            registrationPlace: initialState.registrationPlace,
-            notaryPlace: initialState.notaryPlace,
-            province: initialState.province,
-            district: initialState.district,
-            ward: initialState.ward,
-            houseNumber: initialState.houseNumber,
-            legalProjectName: initialState.legalProjectName,
-            assetStatus: initialState.assetStatus,
-            legalStatus: initialState.legalStatus,
-            actualProvince: initialState.actualProvince,
-            actualDistrict: initialState.actualDistrict,
-            actualWard: initialState.actualWard,
-            actualHouseNumber: initialState.actualHouseNumber,
-            actualProjectName: initialState.actualProjectName
-        });
-
-        const detailInfoChanged = JSON.stringify({
-            certificateNumber: formData.certificateNumber,
-            frontage: formData.frontage,
-            alleyWidth: formData.alleyWidth,
-            numberOfFrontages: formData.numberOfFrontages,
-            roadType: formData.roadType,
-            width: formData.width,
-            length: formData.length,
-            privateArea: formData.privateArea,
-            totalValue: formData.totalValue,
-            usagePurpose: formData.usagePurpose,
-            usageDuration: formData.usageDuration,
-            area: formData.area,
-            valueArea: formData.valueArea,
-            unitPrice: formData.unitPrice,
-            constructionType: formData.constructionType,
-            constructionName: formData.constructionName,
-            constructionArea: formData.constructionArea
-        }) !== JSON.stringify({
-            certificateNumber: initialState.certificateNumber,
-            frontage: initialState.frontage,
-            alleyWidth: initialState.alleyWidth,
-            numberOfFrontages: initialState.numberOfFrontages,
-            roadType: initialState.roadType,
-            width: initialState.width,
-            length: initialState.length,
-            privateArea: initialState.privateArea,
-            totalValue: initialState.totalValue,
-            usagePurpose: initialState.usagePurpose,
-            usageDuration: initialState.usageDuration,
-            area: initialState.area,
-            valueArea: initialState.valueArea,
-            unitPrice: initialState.unitPrice,
-            constructionType: initialState.constructionType,
-            constructionName: initialState.constructionName,
-            constructionArea: initialState.constructionArea
-        });
-
-        const valuationResultChanged = JSON.stringify({
-            valuationDate: formData.valuationDate,
-            longitude: formData.longitude,
-            latitude: formData.latitude,
-            notes: formData.notes,
-            noInfoReason: formData.noInfoReason,
-            climStatus: formData.climStatus,
-            climDetails: formData.climDetails
-        }) !== JSON.stringify({
-            valuationDate: initialState.valuationDate,
-            longitude: initialState.longitude,
-            latitude: initialState.latitude,
-            notes: initialState.notes,
-            noInfoReason: initialState.noInfoReason,
-            climStatus: initialState.climStatus,
-            climDetails: initialState.climDetails
-        });
+        const basicInfoChanged = JSON.stringify(basicInfo) !== JSON.stringify(initialBasicInfo);
+        const additionalInfoChanged = JSON.stringify(additionalInfo) !== JSON.stringify(initialAdditionalInfo);
+        const detailInfoChanged = JSON.stringify(detailInfo) !== JSON.stringify(initialDetailInfo);
+        const valuationResultChanged = JSON.stringify(valuationResult) !== JSON.stringify(initialValuationResult);
 
         setIsChanged({
             basicInfo: basicInfoChanged,
@@ -209,7 +142,7 @@ const AssetDetail = () => {
             detailInfo: detailInfoChanged,
             valuationResult: valuationResultChanged
         });
-    }, [formData]);
+    }, [basicInfo, additionalInfo, detailInfo, valuationResult, initialBasicInfo, initialAdditionalInfo, initialDetailInfo, initialValuationResult]);
 
     return (
         <div>
@@ -245,33 +178,33 @@ const AssetDetail = () => {
                     <div className={styles.basicInfor}>
                         <div>
                             <Form.Item label="Mã tài sản">
-                                <Input type="text" name="assetCode" value={assetCode} disabled />
+                                <Input type="text" name="assetCode" value={basicInfo.assetCode} disabled />
                             </Form.Item>
                             <Form.Item label="Mã chi nhánh">
-                                <Input type="text" name="brandCode" value={formData.brandCode} onChange={handleChange} />
+                                <Input type="text" name="brandCode" value={basicInfo.brandCode} onChange={handleBasicInfoChange} />
                             </Form.Item>
                             <Form.Item label="Chi nhánh">
-                                <Input type="text" name="brandName" value={formData.brandName} onChange={handleChange}/>
+                                <Input type="text" name="brandName" value={basicInfo.brandName} onChange={handleBasicInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Phòng quản lý">
-                                <Input type="text" name="managementRoom" value={formData.managementRoom} onChange={handleChange}/>
+                                <Input type="text" name="managementRoom" value={basicInfo.managementRoom} onChange={handleBasicInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Cán bộ định giá gần nhất">
-                                <Input type="text" name="nearestAppraiser" value={formData.nearestAppraiser} onChange={handleChange}/>
+                                <Input type="text" name="nearestAppraiser" value={basicInfo.nearestAppraiser} onChange={handleBasicInfoChange}/>
                             </Form.Item>
                         </div>
                         <div>
                             <Form.Item label="CIF khách hàng vay">
-                                <Input type="text" name="CIFCode" value={formData.CIFCode} onChange={handleChange}/>
+                                <Input type="text" name="CIFCode" value={basicInfo.CIFCode} onChange={handleBasicInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Tên khách hàng vay">
-                                <Input type="text" name="customerName" value={formData.customerName} onChange={handleChange}/>
+                                <Input type="text" name="customerName" value={basicInfo.customerName} onChange={handleBasicInfoChange}/>
                             </Form.Item>
                             <Form.Item label="CIF bên đảm bảo">
-                                <Input type="text" name="CIFGuarantor" value={formData.CIFGuarantor} onChange={handleChange}/>
+                                <Input type="text" name="CIFGuarantor" value={basicInfo.CIFGuarantor} onChange={handleBasicInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Tên chủ tài sản">
-                                <Input type="text" name="ownerName" value={formData.ownerName} onChange={handleChange}/>
+                                <Input type="text" name="ownerName" value={basicInfo.ownerName} onChange={handleBasicInfoChange}/>
                             </Form.Item>
                         </div>
                     </div>
@@ -290,48 +223,48 @@ const AssetDetail = () => {
                     <div className={styles.additionalInfor}>
                         <div>
                             <Form.Item label="Nơi đăng ký GDBĐ">
-                                <Input type="text" name="registrationPlace" value={formData.registrationPlace} onChange={handleChange}/>
+                                <Input type="text" name="registrationPlace" value={additionalInfo.registrationPlace} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Nơi công chứng">
-                                <Input type="text" name="notaryPlace" value={formData.notaryPlace} onChange={handleChange}/>
+                                <Input type="text" name="notaryPlace" value={additionalInfo.notaryPlace} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Tỉnh/ Thành phố">
-                                <Input type="text" name="province" value={formData.province} onChange={handleChange}/>
+                                <Input type="text" name="province" value={additionalInfo.province} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Quận/ Huyện">
-                                <Input type="text" name="district" value={formData.district} onChange={handleChange}/>
+                                <Input type="text" name="district" value={additionalInfo.district} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Phường/ Xã">
-                                <Input type="text" name="ward" value={formData.ward} onChange={handleChange}/>
+                                <Input type="text" name="ward" value={additionalInfo.ward} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Số nhà">
-                                <Input type="text" name="houseNumber" value={formData.houseNumber} onChange={handleChange}/>
+                                <Input type="text" name="houseNumber" value={additionalInfo.houseNumber} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Tên pháp lý dự án theo GCN (nếu có)">
-                                <Input type="text" name="legalProjectName" value={formData.legalProjectName} onChange={handleChange}/>
+                                <Input type="text" name="legalProjectName" value={additionalInfo.legalProjectName} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                         </div>
                         <div>
                             <Form.Item label="Tình trạng tài sản">
-                                <Input type="text" name="assetStatus" value={formData.assetStatus} onChange={handleChange}/>
+                                <Input type="text" name="assetStatus" value={additionalInfo.assetStatus} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Tính chất pháp lý">
-                                <Input type="text" name="legalStatus" value={formData.legalStatus} onChange={handleChange}/>
+                                <Input type="text" name="legalStatus" value={additionalInfo.legalStatus} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Tỉnh/ Thành phố thực tế">
-                                <Input type="text" name="actualProvince" value={formData.actualProvince} onChange={handleChange}/>
+                                <Input type="text" name="actualProvince" value={additionalInfo.actualProvince} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Quận/ Huyện thực tế">
-                                <Input type="text" name="actualDistrict" value={formData.actualDistrict} onChange={handleChange}/>
+                                <Input type="text" name="actualDistrict" value={additionalInfo.actualDistrict} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Phường/ Xã thực tế">
-                                <Input type="text" name="actualWard" value={formData.actualWard} onChange={handleChange}/>
+                                <Input type="text" name="actualWard" value={additionalInfo.actualWard} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Số nhà thực tế">
-                                <Input type="text" name="actualHouseNumber" value={formData.actualHouseNumber} onChange={handleChange}/>
+                                <Input type="text" name="actualHouseNumber" value={additionalInfo.actualHouseNumber} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Tên thương mại dự án thực tế">
-                                <Input type="text" name="actualProjectName" value={formData.actualProjectName} onChange={handleChange}/>
+                                <Input type="text" name="actualProjectName" value={additionalInfo.actualProjectName} onChange={handleAdditionalInfoChange}/>
                             </Form.Item>
                         </div>
                     </div>
@@ -349,60 +282,60 @@ const AssetDetail = () => {
                 }>
                     <div className={styles.containerDetailInfor}>
                         <Form.Item label="Số GCN">
-                            <Input type="text" name="certificateNumber" value={formData.certificateNumber} onChange={handleChange}/>
+                            <Input type="text" name="certificateNumber" value={detailInfo.certificateNumber} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                         <Form.Item label="Mặt tiền tiếp giáp">
-                            <Input type="text" name="frontage" value={formData.frontage} onChange={handleChange}/>
+                            <Input type="text" name="frontage" value={detailInfo.frontage} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                         <div className={styles.locationDescription}>
                             <Form.Item label="Độ rộng mặt ngõ/ hẻm/ đường nội bộ nhỏ nhất (m)">
-                                <Input type="text" name="alleyWidth" value={formData.alleyWidth} onChange={handleChange}/>
+                                <Input type="text" name="alleyWidth" value={detailInfo.alleyWidth} onChange={handleDetailInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Số mặt tiếp giáp">
-                                <Input type="text" name="numberOfFrontages" value={formData.numberOfFrontages} onChange={handleChange}/>
+                                <Input type="text" name="numberOfFrontages" value={detailInfo.numberOfFrontages} onChange={handleDetailInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Loại đường tiếp giáp">
-                                <Input type="text" name="roadType" value={formData.roadType} onChange={handleChange}/>
+                                <Input type="text" name="roadType" value={detailInfo.roadType} onChange={handleDetailInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Kích thước chiều rộng(m)">
-                                <Input type="text" name="width" value={formData.width} onChange={handleChange}/>
+                                <Input type="text" name="width" value={detailInfo.width} onChange={handleDetailInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Kích thước chiều dài(m)">
-                                <Input type="text" name="length" value={formData.length} onChange={handleChange}/>
+                                <Input type="text" name="length" value={detailInfo.length} onChange={handleDetailInfoChange}/>
                             </Form.Item>
                         </div>
 
                         <Form.Item label="Diện tích sử dụng riêng theo GCN(m2)">
-                            <Input type="text" name="privateArea" value={formData.privateArea} onChange={handleChange}/>
+                            <Input type="text" name="privateArea" value={detailInfo.privateArea} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                         <Form.Item label="Tổng giá trị">
-                            <Input type="text" name="totalValue" value={formData.totalValue} onChange={handleChange}/>
+                            <Input type="text" name="totalValue" value={detailInfo.totalValue} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                         <Form.Item label="Mục đích sử dụng">
-                            <Input type="text" name="usagePurpose" value={formData.usagePurpose} onChange={handleChange}/>
+                            <Input type="text" name="usagePurpose" value={detailInfo.usagePurpose} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                         <Form.Item label="Thời hạn sử dụng">
-                            <Input type="text" name="usageDuration" value={formData.usageDuration} onChange={handleChange}/>
+                            <Input type="text" name="usageDuration" value={detailInfo.usageDuration} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                         <Form.Item label="Diện tích (m2)">
-                            <Input type="text" name="area" value={formData.area} onChange={handleChange}/>
+                            <Input type="text" name="area" value={detailInfo.area} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                         <div className={styles.landValue}>
                             <Form.Item label="Diện tích tính giá trị (m2)">
-                                <Input type="text" name="valueArea" value={formData.valueArea} onChange={handleChange}/>
+                                <Input type="text" name="valueArea" value={detailInfo.valueArea} onChange={handleDetailInfoChange}/>
                             </Form.Item>
                             <Form.Item label="Đơn giá (đ/m2)">
-                                <Input type="text" name="unitPrice" value={formData.unitPrice} onChange={handleChange}/>
+                                <Input type="text" name="unitPrice" value={detailInfo.unitPrice} onChange={handleDetailInfoChange}/>
                             </Form.Item>
                         </div>
                         <Form.Item label="Loại công trình">
-                            <Input type="text" name="constructionType" value={formData.constructionType} onChange={handleChange}/>
+                            <Input type="text" name="constructionType" value={detailInfo.constructionType} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                         <Form.Item label="Tên công trình">
-                            <Input type="text" name="constructionName" value={formData.constructionName} onChange={handleChange}/>
+                            <Input type="text" name="constructionName" value={detailInfo.constructionName} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                         <Form.Item label="Diện tích sàn CTXD (m2)">
-                            <Input type="text" name="constructionArea" value={formData.constructionArea} onChange={handleChange}/>
+                            <Input type="text" name="constructionArea" value={detailInfo.constructionArea} onChange={handleDetailInfoChange}/>
                         </Form.Item>
                     </div>
                 </Card>
@@ -419,27 +352,27 @@ const AssetDetail = () => {
                 }>
                     <div className={styles.valuationResult}>
                         <Form.Item label="Ngày thông báo kết quả định giá">
-                            <Input type="text" name="valuationDate" value={formData.valuationDate} onChange={handleChange}/>
+                            <Input type="text" name="valuationDate" value={valuationResult.valuationDate} onChange={handleValuationResultChange}/>
                         </Form.Item>
                         <div className={styles.coordinates}>
                             <Form.Item label="Kinh độ">
-                                <Input type="text" name="longitude" value={formData.longitude} onChange={handleChange}/>
+                                <Input type="text" name="longitude" value={valuationResult.longitude} onChange={handleValuationResultChange}/>
                             </Form.Item>
                             <Form.Item label="Vĩ độ">
-                                <Input type="text" name="latitude" value={formData.latitude} onChange={handleChange}/>
+                                <Input type="text" name="latitude" value={valuationResult.latitude} onChange={handleValuationResultChange}/>
                             </Form.Item>
                         </div>
                         <Form.Item label="Ghi chú">
-                            <Input type="text" name="notes" value={formData.notes} onChange={handleChange}/>
+                            <Input type="text" name="notes" value={valuationResult.notes} onChange={handleValuationResultChange}/>
                         </Form.Item>
                         <Form.Item label="Lý do không nhập thông tin">
-                            <Input type="text" name="noInfoReason" value={formData.noInfoReason} onChange={handleChange}/>
+                            <Input type="text" name="noInfoReason" value={valuationResult.noInfoReason} onChange={handleValuationResultChange}/>
                         </Form.Item>
                         <Form.Item label="Tình trạng hồ sơ trên CLIM">
-                            <Input type="text" name="climStatus" value={formData.climStatus} onChange={handleChange}/>
+                            <Input type="text" name="climStatus" value={valuationResult.climStatus} onChange={handleValuationResultChange}/>
                         </Form.Item>
                         <Form.Item label="Chi tiết hồ sơ đã scan trên CLIM">
-                            <Input type="text" name="climDetails" value={formData.climDetails} onChange={handleChange}/>
+                            <Input type="text" name="climDetails" value={valuationResult.climDetails} onChange={handleValuationResultChange}/>
                         </Form.Item>
                     </div>
                 </Card>
