@@ -5,10 +5,10 @@ import { useState, useEffect, useMemo } from "react";
 import styles from './DetailAndUpdate.module.css';
 
 const AssetDetail = () => {
-    const { assetCode } = useParams();
+    const { code } = useParams();
 
     const initialBasicInfo = useMemo(() => ({
-        assetCode: assetCode,
+        assetCode: code,
         brandCode: '',
         brandName: '',
         managementRoom: '',
@@ -17,7 +17,7 @@ const AssetDetail = () => {
         customerName: '',
         CIFGuarantor: '',
         ownerName: ''
-    }), [assetCode]);
+    }), [code]);
 
     const initialAdditionalInfo = useMemo(() => ({
         registrationPlace: '',
@@ -150,7 +150,7 @@ const AssetDetail = () => {
                 <ul className={styles.nav}>
                     <li><Link to="/"><HomeOutlined />Trang chủ <RightOutlined /></Link></li>
                     <li><Link to="/AssetManagement">Quản lý tài sản <RightOutlined /></Link></li>
-                    <li><Link to={`/AssetDetail/${assetCode}`}>Chi tiết</Link></li>
+                    <li><Link to={`/AssetDetail/${code}`}>Chi tiết</Link></li>
                 </ul>
             </nav>
 

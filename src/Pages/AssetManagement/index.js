@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { Table, Input, Select, Button, Space } from 'antd';
 import { HomeOutlined, RightOutlined, EllipsisOutlined, FileExcelOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import styles from './AssetManagement.module.css';
-import * as XLSX from 'xlsx';
 
 const { Option } = Select;
 
@@ -11,12 +10,22 @@ const { Option } = Select;
 const AccsetManagement = () => {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useState({
-        assetCode: '',
-        cif: '',
-        legalStatus: '',
-        constructionType: '',
-        climStatus: ''
+        code: '',
+        customerCIF: '',
+        legalStateName: '',
+        constructionTypeName: ''
+        // profileCLIMStatus: ''
     });
+
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 10,
+        },
+    });
+
     const columns = [
         {
             title: 'STT',
@@ -26,54 +35,61 @@ const AccsetManagement = () => {
         },
         {
             title: 'Mã tài sản BIDV',
-            dataIndex: 'assetCode',
+            dataIndex: 'code',
             width: 100,
         },
         {
             title: 'CIF KH vay',
-            dataIndex: 'cif',
+            dataIndex: 'customerCIF',
+            render: (text) => text || '',
             width: 100,
         },
         {
             title: 'Tên KH',
-            dataIndex: 'name',
-            // render: (name) => `${name.first} ${name.last}`,
+            dataIndex: 'customerName',
+            render: (text) => text || '',
             width: 150,
         },
         {
             title: 'CIF bên đảm bảo',
-            dataIndex: 'cifGuarantor',
+            dataIndex: 'ensureCIF',
+            render: (text) => text || '',
             width: 100,
         },
         {
             title: 'Tên chủ tài sản',
-            dataIndex: 'owner',
-            // render: (owner) => `${owner.first} ${owner.last}`,
+            dataIndex: 'ownerName',
+            render: (text) => text || '',
             width: 150,
         },
         {
             title: 'Nơi đăng ký GDBĐ',
-            dataIndex: 'place',
+            dataIndex: 'noiDangKyGDBD',
+            render: (text) => text || '',
             width: 150,
         },
         {
             title: 'tình trạng tài sản',
-            dataIndex: 'status',
+            dataIndex: 'assetStateName',
+            render: (text) => text || '',
             width: 100,
         },
         {
             title: 'tính chất pháp lý',
-            dataIndex: 'legal',
+            dataIndex: 'legalStateName',
+            render: (text) => text || '',
             width: 120,
         },
         {
             title: 'loại công trình',
-            dataIndex: 'type',
+            dataIndex: 'constructionTypeName',
+            render: (text) => text || '',
             width: 100,
         },
         {
             title: 'trạng thái hồ sơ trên CLIM',
-            dataIndex: 'statusClim',
+            dataIndex: 'profileCLIMStatus',
+            render: (text) => text || '',
             width: 100,
         },
         {
@@ -81,86 +97,46 @@ const AccsetManagement = () => {
             dataIndex: 'action',
             width: 50,
             render: (_, record) => (
-                <div onClick={() => navigate(`/AssetDetail/${record.assetCode}`)}>
+                <div onClick={() => navigate(`/AssetDetail/${record.code}`)}>
                     <EllipsisOutlined className={styles.action} />
                 </div>
             ),
         },
     ];
 
-    // const getRandomuserParams = (params) => ({
-    //     results: params.pagination?.pageSize,
-    //     page: params.pagination?.current,
-    //     ...params,
-    // });
 
-    // Dữ liệu mẫu (Mock Data)
-    const mockData = Array.from({ length: 200 }, (_, index) => ({
-        key: index + 1,
-        assetCode: `TSBIDV${1000 + index}`,
-        cif: `CIF${2000 + index}`,
-        name: `Khách hàng ${index + 1}`,
-        cifGuarantor: `CIFG${3000 + index}`,
-        owner: `Chủ tài sản ${index + 1}`,
-        place: `Địa điểm ${index + 1}`,
-        status: index % 2 === 0 ? 'Đang sử dụng' : 'Đã bán',
-        legal: index % 2 === 0 ? 'Đã cấp GCN' : 'Chưa cấp GCN',
-        type: index % 3 === 0 ? 'Nhà ở riêng lẻ' : 'Công trình khác',
-        statusClim: index % 2 === 0 ? 'Đã có đủ hồ sơ' : 'Thiếu hồ sơ',
-        id: index + 1,
-    }));
-
-    const [data, setData] = useState();
-    const [loading, setLoading] = useState(false);
-    const [tableParams, setTableParams] = useState({
-        pagination: {
-            current: 1,
-            pageSize: 10,
-        },
-    });
-    // const fetchData = () => {
-    //     setLoading(true);
-    //     fetch(`https://randomuser.me/api?${qs.stringify(getRandomuserParams(tableParams))}`)
-    //         .then((res) => res.json())
-    //         .then(({ results }) => {
-    //             setData(results);
-    //             setLoading(false);
-    //             setTableParams({
-    //                 ...tableParams,
-    //                 pagination: {
-    //                     ...tableParams.pagination,
-    //                     total: 200,
-    //                     // 200 is mock data, you should read it from server
-    //                     // total: data.totalCount,
-    //                 },
-    //             });
-    //         });
-    // };
-
-    // Hàm lấy dữ liệu (dùng mock data)
-    const fetchData = () => {
+    const fetchData = (searchParams = {}) => {
         setLoading(true);
-        setTimeout(() => {
-            setData(mockData);
+        fetch('http://192.168.1.163:8080/collateral/find', {
+            method: 'POST',
+            body: JSON.stringify(searchParams), 
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then((res) => res.json())
+        .then((data) => {
+            console.log('API response:', data);
+            setData(data); // Giả sử API trả về một đối tượng với thuộc tính 'results'
             setLoading(false);
             setTableParams((prev) => ({
                 ...prev,
                 pagination: {
                     ...prev.pagination,
-                    total: mockData.length,
+                    total: data.totalCount, // Giả sử API trả về tổng số bản ghi
                 },
             }));
-        }, 500);
+        })
+        .catch((error) => {
+            console.error('Error fetching data:', error);
+            setLoading(false);
+        });
     };
 
-    useEffect(fetchData, []);
-    // useEffect(fetchData, [
-    //     tableParams.pagination?.current,
-    //     tableParams.pagination?.pageSize,
-    //     tableParams?.sortOrder,
-    //     tableParams?.sortField,
-    //     JSON.stringify(tableParams.filters),
-    // ]);
+    useEffect(() => {
+        fetchData();
+    }, []);
+    console.log("Data: ", data);
 
     const [exportData, setExportData] = useState(null);
 
@@ -168,19 +144,19 @@ const AccsetManagement = () => {
         const fetchExportData = () => {
             fetch('http://192.168.1.163:8080/collateral/export-excel', {
                 method: 'POST',
-                body: JSON.stringify({}),  // Thay đổi body nếu cần thiết
+                body: JSON.stringify({}), 
                 headers: {
                     'Content-Type': 'application/json',
                 }
             })
-            .then(response => response.blob()) // Chuyển đổi phản hồi thành Blob
-            .then(blob => setExportData(blob)) // Lưu trữ Blob trong state
-            .catch(error => console.error('Error fetching export data:', error));
+                .then(response => response.blob()) // Chuyển đổi phản hồi thành Blob
+                .then(blob => setExportData(blob)) // Lưu trữ Blob trong state
+                .catch(error => console.error('Error fetching export data:', error));
         };
 
         fetchExportData();
     }, []);
-    
+
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
             pagination,
@@ -197,24 +173,11 @@ const AccsetManagement = () => {
     };
 
     const handleSearch = () => {
-        const filteredData = mockData.filter(item => {
-            return (
-                (!searchParams.assetCode || item.assetCode.includes(searchParams.assetCode)) &&
-                (!searchParams.cif || item.cif.includes(searchParams.cif)) &&
-                (!searchParams.legalStatus || item.legal === searchParams.legalStatus) &&
-                (!searchParams.constructionType || item.type === searchParams.constructionType) &&
-                (!searchParams.climStatus || item.statusClim === searchParams.climStatus)
-            );
-        });
-        setData(filteredData);
-        setTableParams((prev) => ({
-            ...prev,
-            pagination: {
-                ...prev.pagination,
-                total: filteredData.length,
-                current: 1,
-            },
-        }));
+        const filteredParams = Object.fromEntries(
+            Object.entries(searchParams).filter(([_, value]) => value)
+        );
+        fetchData(filteredParams);
+        console.log('Data Search:', filteredParams);
     };
 
     const handleInputChange = (e) => {
@@ -246,6 +209,10 @@ const AccsetManagement = () => {
         }
     };
 
+    const handleImport = () => {
+        
+    };
+
     return (
 
         <>
@@ -260,21 +227,21 @@ const AccsetManagement = () => {
             <Space style={{ marginBottom: 16, marginLeft: 30 }} wrap>
                 <Input
                     placeholder="Mã tài sản BIDV"
-                    style={{ width: 200 }} name='assetCode'
-                    value={searchParams.assetCode}
+                    style={{ width: 200 }} name='code'
+                    value={searchParams.code}
                     onChange={handleInputChange}
                 />
                 <Input
                     placeholder="CIF Khách hàng vay"
-                    style={{ width: 200 }} name='cif'
-                    value={searchParams.cif}
+                    style={{ width: 200 }} name='customerCIF'
+                    value={searchParams.customerCIF}
                     onChange={handleInputChange}
                 />
                 <Select
                     placeholder="Tính chất pháp lý"
                     style={{ width: 200 }}
-                    value={searchParams.legalStatus || undefined}
-                    onChange={(value) => handleSelectChange('legalStatus', value)}
+                    value={searchParams.legalStateName || undefined}
+                    onChange={(value) => handleSelectChange('legalStateName', value)}
                     allowClear
                 >
                     <Option value="Đã cấp GCN">Đã cấp GCN</Option>
@@ -283,18 +250,30 @@ const AccsetManagement = () => {
                 <Select
                     placeholder="Loại công trình"
                     style={{ width: 200 }}
-                    value={searchParams.constructionType || undefined}
-                    onChange={(value) => handleSelectChange('constructionType', value)}
+                    value={searchParams.constructionTypeName || undefined}
+                    onChange={(value) => handleSelectChange('constructionTypeName', value)}
                     allowClear
                 >
-                    <Option value="Nhà ở riêng lẻ">Nhà ở riêng lẻ</Option>
-                    <Option value="Công trình khác">Công trình khác</Option>
+                    <Option value="Nhà ở độc lập/riêng lẻ">Nhà ở độc lập/riêng lẻ</Option>
+                    <Option value="nhiều tầng đồng sở hữu">nhiều tầng đồng sở hữu</Option>
+                    <Option value="sử dụng">sử dụng</Option>
+                    <Option value="Nhà biệt thự">Nhà biệt thự</Option>
+                    <Option value="liền kề trong khu đô thị/dự án">liền kề trong khu đô thị/dự án</Option>
+                    <Option value="Căn hộ chung cư">Căn hộ chung cư</Option>
+                    <Option value="Nhà tập thể">Nhà tập thể</Option>
+                    <Option value="Sàn văn phòng">Sàn văn phòng</Option>
+                    <Option value="Toà nhà văn phòng">Toà nhà văn phòng</Option>
+                    <Option value="Toà nhà hỗn hợp">Toà nhà hỗn hợp</Option>
+                    <Option value="Khách sạn">Khách sạn</Option>
+                    <Option value="Nhà xưởng/Cửa hàng/Kho">Nhà xưởng/Cửa hàng/Kho</Option>
+                    <Option value="CTXD khác">CTXD khác</Option>
+                    <Option value="Đất trống">Đất trống</Option>
                 </Select>
                 <Select
                     placeholder="Tình trạng hồ sơ trên CLIM"
                     style={{ width: 200 }}
-                    value={searchParams.climStatus || undefined}
-                    onChange={(value) => handleSelectChange('climStatus', value)}
+                    value={searchParams.profileCLIMStatus || undefined}
+                    onChange={(value) => handleSelectChange('profileCLIMStatus', value)}
                     allowClear
                 >
                     <Option value="Đã có đầy đủ hồ sơ">Đã có đầy đủ hồ sơ</Option>
@@ -310,10 +289,11 @@ const AccsetManagement = () => {
                     Thêm mới
                 </Button>
                 <Button icon={<FileExcelOutlined />} onClick={handleExport}>Xuất file</Button>
+                <Button icon={<FileExcelOutlined />} onClick={handleImport}>Nhập file</Button>
             </Space>
             <Table
                 columns={columns}
-                rowKey={(record) => record.id}
+                rowKey={(record) => record.code}
                 dataSource={data}
                 pagination={tableParams.pagination}
                 loading={loading}
