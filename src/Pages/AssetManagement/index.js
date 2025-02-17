@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { Table, Input, Select, Button, Space } from 'antd';
-import { HomeOutlined, RightOutlined, EllipsisOutlined, FileExcelOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Input, Select, Button, Space, Modal, Upload, message } from 'antd';
+import { HomeOutlined, RightOutlined, EllipsisOutlined, FileExcelOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
 import styles from './AssetManagement.module.css';
 
 const { Option } = Select;
@@ -25,6 +25,8 @@ const AccsetManagement = () => {
             pageSize: 10,
         },
     });
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [fileList, setFileList] = useState([]);
 
     const columns = [
         {
@@ -105,32 +107,32 @@ const AccsetManagement = () => {
     ];
 
 
-    const fetchData = (searchParams = {}) => {
+    const fetchData = (params = {}) => {
         setLoading(true);
         fetch('http://192.168.1.163:8080/collateral/find', {
             method: 'POST',
-            body: JSON.stringify(searchParams), 
+            body: JSON.stringify(params),
             headers: {
                 'Content-Type': 'application/json',
             }
         })
-        .then((res) => res.json())
-        .then((data) => {
-            console.log('API response:', data);
-            setData(data); // Giả sử API trả về một đối tượng với thuộc tính 'results'
-            setLoading(false);
-            setTableParams((prev) => ({
-                ...prev,
-                pagination: {
-                    ...prev.pagination,
-                    total: data.totalCount, // Giả sử API trả về tổng số bản ghi
-                },
-            }));
-        })
-        .catch((error) => {
-            console.error('Error fetching data:', error);
-            setLoading(false);
-        });
+            .then((res) => res.json())
+            .then((data) => {
+                console.log('API response:', data);
+                setData(data); // Giả sử API trả về một đối tượng với thuộc tính 'results'
+                setLoading(false);
+                setTableParams((prev) => ({
+                    ...prev,
+                    pagination: {
+                        ...prev.pagination,
+                        total: data.totalCount, // Giả sử API trả về tổng số bản ghi
+                    },
+                }));
+            })
+            .catch((error) => {
+                console.error('Error fetching data:', error);
+                setLoading(false);
+            });
     };
 
     useEffect(() => {
@@ -144,7 +146,7 @@ const AccsetManagement = () => {
         const fetchExportData = () => {
             fetch('http://192.168.1.163:8080/collateral/export-excel', {
                 method: 'POST',
-                body: JSON.stringify({}), 
+                body: JSON.stringify({}),
                 headers: {
                     'Content-Type': 'application/json',
                 }
@@ -210,7 +212,44 @@ const AccsetManagement = () => {
     };
 
     const handleImport = () => {
-        
+        setIsModalVisible(true);
+    };
+
+    const handleModalOk = () => {
+        if (fileList.length === 0) {
+            message.error('Vui lòng chọn file để tải lên');
+            return;
+        }
+
+        const formData = new FormData();
+        fileList.forEach(file => {
+            formData.append('file', file.originFileObj);
+        });
+
+        fetch('http://192.168.1.163:8080/collateral/import-excel', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Import response:', data);
+            message.success('Tải file lên thành công');
+            setIsModalVisible(false);
+            setFileList([]);
+            fetchData();
+        })
+        .catch(error => {
+            console.error('Error importing file:', error);
+            message.error('Tải file lên thất bại');
+        });
+    };
+
+    const handleModalCancel = () => {
+        setIsModalVisible(false);
+    };
+
+    const handleUploadChange = ({ fileList }) => {
+        setFileList(fileList);
     };
 
     return (
@@ -300,6 +339,20 @@ const AccsetManagement = () => {
                 onChange={handleTableChange}
                 scroll={{ x: 'max-content' }}
             />
+            <Modal
+                title="Nhập file"
+                open={isModalVisible}
+                onOk={handleModalOk}
+                onCancel={handleModalCancel}
+            >
+                <Upload
+                    fileList={fileList}
+                    onChange={handleUploadChange}
+                    beforeUpload={() => false} // Prevent automatic upload
+                >
+                    <Button icon={<UploadOutlined />}>Chọn file</Button>
+                </Upload>
+            </Modal>
         </>
 
     );
