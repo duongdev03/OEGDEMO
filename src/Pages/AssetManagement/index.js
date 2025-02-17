@@ -161,6 +161,26 @@ const AccsetManagement = () => {
     //     tableParams?.sortField,
     //     JSON.stringify(tableParams.filters),
     // ]);
+
+    const [exportData, setExportData] = useState(null);
+
+    useEffect(() => {
+        const fetchExportData = () => {
+            fetch('http://192.168.1.163:8080/collateral/export-excel', {
+                method: 'POST',
+                body: JSON.stringify({}),  // Thay đổi body nếu cần thiết
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.blob()) // Chuyển đổi phản hồi thành Blob
+            .then(blob => setExportData(blob)) // Lưu trữ Blob trong state
+            .catch(error => console.error('Error fetching export data:', error));
+        };
+
+        fetchExportData();
+    }, []);
+    
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
             pagination,
@@ -213,36 +233,17 @@ const AccsetManagement = () => {
     };
 
     const handleExport = () => {
-        const columnTitleMapping = {
-            stt: 'STT',
-            assetCode: 'Mã tài sản BIDV',
-            cif: 'CIF KH vay',
-            name: 'Tên KH',
-            cifGuarantor: 'CIF bên đảm bảo',
-            owner: 'Tên chủ tài sản',
-            place: 'Nơi đăng ký GDBĐ',
-            status: 'Tình trạng tài sản',
-            legal: 'Tính chất pháp lý',
-            type: 'Loại công trình',
-            statusClim: 'Trạng thái hồ sơ trên CLIM',
-        };
-
-        const transformedData = data.map(item => {
-            const transformedItem = {};
-            for (const key in item) {
-                if (columnTitleMapping[key]) {
-                    transformedItem[columnTitleMapping[key]] = item[key];
-                } else {
-                    transformedItem[key] = item[key];
-                }
-            }
-            return transformedItem;
-        });
-
-        const worksheet = XLSX.utils.json_to_sheet(transformedData);
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Assets");
-        XLSX.writeFile(workbook, "assets.xlsx");
+        if (exportData) {
+            const url = window.URL.createObjectURL(exportData);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'assets.xlsx'); // Tên file bạn muốn lưu
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+        } else {
+            console.error('No export data available');
+        }
     };
 
     return (
@@ -263,36 +264,36 @@ const AccsetManagement = () => {
                     value={searchParams.assetCode}
                     onChange={handleInputChange}
                 />
-                <Input 
-                    placeholder="CIF Khách hàng vay" 
-                    style={{ width: 200 }} name='cif' 
-                    value={searchParams.cif} 
-                    onChange={handleInputChange} 
+                <Input
+                    placeholder="CIF Khách hàng vay"
+                    style={{ width: 200 }} name='cif'
+                    value={searchParams.cif}
+                    onChange={handleInputChange}
                 />
-                <Select 
+                <Select
                     placeholder="Tính chất pháp lý"
-                    style={{ width: 200 }} 
-                    value={searchParams.legalStatus || undefined} 
+                    style={{ width: 200 }}
+                    value={searchParams.legalStatus || undefined}
                     onChange={(value) => handleSelectChange('legalStatus', value)}
                     allowClear
                 >
                     <Option value="Đã cấp GCN">Đã cấp GCN</Option>
                     <Option value="Chưa cấp GCN">Chưa cấp GCN</Option>
                 </Select>
-                <Select 
-                placeholder="Loại công trình" 
-                    style={{ width: 200 }} 
-                    value={searchParams.constructionType || undefined} 
+                <Select
+                    placeholder="Loại công trình"
+                    style={{ width: 200 }}
+                    value={searchParams.constructionType || undefined}
                     onChange={(value) => handleSelectChange('constructionType', value)}
                     allowClear
                 >
                     <Option value="Nhà ở riêng lẻ">Nhà ở riêng lẻ</Option>
                     <Option value="Công trình khác">Công trình khác</Option>
                 </Select>
-                <Select 
-                    placeholder="Tình trạng hồ sơ trên CLIM" 
-                    style={{ width: 200 }} 
-                    value={searchParams.climStatus || undefined} 
+                <Select
+                    placeholder="Tình trạng hồ sơ trên CLIM"
+                    style={{ width: 200 }}
+                    value={searchParams.climStatus || undefined}
                     onChange={(value) => handleSelectChange('climStatus', value)}
                     allowClear
                 >
@@ -302,10 +303,10 @@ const AccsetManagement = () => {
                 <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>Tìm kiếm</Button>
             </Space>
             <Space style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16, marginRight: 20 }} wrap>
-                <Button 
+                <Button
                     onClick={() => navigate('/addCollateral')}
-                    type="primary" 
-                    icon={<PlusOutlined />}>           
+                    type="primary"
+                    icon={<PlusOutlined />}>
                     Thêm mới
                 </Button>
                 <Button icon={<FileExcelOutlined />} onClick={handleExport}>Xuất file</Button>

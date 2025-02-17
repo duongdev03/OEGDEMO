@@ -4,6 +4,7 @@ import AssetManagement from "./Pages/AssetManagement";
 import AssetDetail from "./Pages/AssetDetail";
 import AddCollateral from "./Pages/AddCollateral";
 import DynamicTitle from "./Pages/DynamicTitle";
+import { useEffect } from "react";
 
 function App() {
   return (
