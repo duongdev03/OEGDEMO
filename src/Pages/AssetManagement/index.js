@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { Table, Input, Select, Button, Space, Modal, Upload, message } from 'antd';
-import { HomeOutlined, RightOutlined, EllipsisOutlined, FileExcelOutlined, PlusOutlined, SearchOutlined, UploadOutlined } from '@ant-design/icons';
+import { Table, Input, Select, Button, Space, Modal, message } from 'antd';
+import { HomeOutlined, RightOutlined, EllipsisOutlined, FileExcelOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import styles from './AssetManagement.module.css';
 
 const { Option } = Select;
@@ -26,7 +26,8 @@ const AccsetManagement = () => {
         },
     });
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [fileList, setFileList] = useState([]);
+    const [file, setFile] = useState(null);
+    
 
     const columns = [
         {
@@ -116,7 +117,7 @@ const AccsetManagement = () => {
                 'Content-Type': 'application/json',
             }
         })
-            .then((res) => res.json())
+            .then((response) => response.json())
             .then((data) => {
                 console.log('API response:', data);
                 setData(data); // Giả sử API trả về một đối tượng với thuộc tính 'results'
@@ -216,40 +217,54 @@ const AccsetManagement = () => {
     };
 
     const handleModalOk = () => {
-        if (fileList.length === 0) {
+        if (file === null) {
             message.error('Vui lòng chọn file để tải lên');
             return;
         }
 
         const formData = new FormData();
-        fileList.forEach(file => {
-            formData.append('file', file.originFileObj);
-        });
+        formData.append('file', file);
+        formData.append('model', new Blob([JSON.stringify({ batchSize: '100' })], { type: "application/json" }));
 
         fetch('http://192.168.1.163:8080/collateral/import-excel', {
             method: 'POST',
             body: formData,
+            // headers: {
+            //     'Content-Type':'multipart/form-data',
+            // },
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Import response:', data);
-            message.success('Tải file lên thành công');
-            setIsModalVisible(false);
-            setFileList([]);
-            fetchData();
-        })
-        .catch(error => {
-            console.error('Error importing file:', error);
-            message.error('Tải file lên thất bại');
-        });
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Import response:', data);
+                message.success('Tải file lên thành công');
+                setIsModalVisible(false);
+                setFile([]);
+                fetchData();
+            })
+            .catch(error => {
+                console.error('Error importing file:', error);
+                message.error('Tải file lên thất bại');
+            });
+        console.log('File:', file);
+        console.log("Form Data:", formData);
     };
 
     const handleModalCancel = () => {
         setIsModalVisible(false);
     };
 
-    const handleUploadChange = ({ fileList }) => {
-        setFileList(fileList);
+    const handleUploadChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+        } else {
+            setFile(null);
+        }
     };
 
     return (
@@ -345,13 +360,7 @@ const AccsetManagement = () => {
                 onOk={handleModalOk}
                 onCancel={handleModalCancel}
             >
-                <Upload
-                    fileList={fileList}
-                    onChange={handleUploadChange}
-                    beforeUpload={() => false} // Prevent automatic upload
-                >
-                    <Button icon={<UploadOutlined />}>Chọn file</Button>
-                </Upload>
+                <input type="file" accept=".xlsx, .csv" onChange={handleUploadChange} />
             </Modal>
         </>
 
