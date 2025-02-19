@@ -22,12 +22,16 @@ const AccsetManagement = () => {
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
-            pageSize: 10,
+            pageSize: 2,
         },
     });
+
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [file, setFile] = useState(null);
-    
+
+    const [recordCount, setRecordCount] = useState(0);
+    const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+
 
     const columns = [
         {
@@ -110,9 +114,10 @@ const AccsetManagement = () => {
 
     const fetchData = (params = {}) => {
         setLoading(true);
+        const { current, pageSize} = tableParams.pagination;
         fetch('http://192.168.1.163:8080/collateral/find', {
             method: 'POST',
-            body: JSON.stringify(params),
+            body: JSON.stringify({...params, page: current - 1, size: pageSize}),
             headers: {
                 'Content-Type': 'application/json',
             }
@@ -120,15 +125,16 @@ const AccsetManagement = () => {
             .then((response) => response.json())
             .then((data) => {
                 console.log('API response:', data);
-                setData(data); // Giả sử API trả về một đối tượng với thuộc tính 'results'
+                setData(data);
                 setLoading(false);
                 setTableParams((prev) => ({
                     ...prev,
                     pagination: {
                         ...prev.pagination,
-                        total: data.totalCount, // Giả sử API trả về tổng số bản ghi
+                        total: data[0]?.total || 0,
                     },
                 }));
+                console.log('total:', data[0]?.total);
             })
             .catch((error) => {
                 console.error('Error fetching data:', error);
@@ -138,7 +144,7 @@ const AccsetManagement = () => {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [tableParams.pagination.pageSize, tableParams.pagination.pageSize]);
     console.log("Data: ", data);
 
     const [exportData, setExportData] = useState(null);
@@ -161,23 +167,28 @@ const AccsetManagement = () => {
     }, []);
 
     const handleTableChange = (pagination, filters, sorter) => {
-        setTableParams({
-            pagination,
+        setTableParams((prev) => ({
+            ...prev,
+            pagination: {
+                ...prev.pagination,
+                current: pagination.current,
+                pageSize: pagination.pageSize,
+            },
             filters,
-            sortOrder: Array.isArray(sorter) ? undefined : sorter.order,
-            sortField: Array.isArray(sorter) ? undefined : sorter.field,
-        });
+            sortOrder: sorter?.order,
+            sortField: sorter?.field,
+        }));
 
         // `dataSource` is useless since `pageSize` changed
-        if (pagination.pageSize !== tableParams.pagination?.pageSize) {
-            setData([]);
-            fetchData();
-        }
+        // if (pagination.pageSize !== tableParams.pagination?.pageSize) {
+        //     setData([]);
+        //     fetchData();
+        // }
     };
 
     const handleSearch = () => {
         const filteredParams = Object.fromEntries(
-            Object.entries(searchParams).filter(([_, value]) => value)
+            Object.entries(searchParams).filter(([_, value]) => value && value.trim())
         );
         fetchData(filteredParams);
         console.log('Data Search:', filteredParams);
@@ -187,7 +198,7 @@ const AccsetManagement = () => {
         const { name, value } = e.target;
         setSearchParams(prev => ({
             ...prev,
-            [name]: value
+            [name]: value ? value.trim() : ''
         }));
     };
 
@@ -244,6 +255,8 @@ const AccsetManagement = () => {
                 message.success('Tải file lên thành công');
                 setIsModalVisible(false);
                 setFile([]);
+                setRecordCount(data.total);
+                setIsSuccessModalVisible(true);
                 fetchData();
             })
             .catch(error => {
@@ -265,6 +278,10 @@ const AccsetManagement = () => {
         } else {
             setFile(null);
         }
+    };
+
+    const handleSuccessModalOk = () => {
+        setIsSuccessModalVisible(false);
     };
 
     return (
@@ -346,10 +363,15 @@ const AccsetManagement = () => {
                 <Button icon={<FileExcelOutlined />} onClick={handleImport}>Nhập file</Button>
             </Space>
             <Table
+                style={{margin:20}}
                 columns={columns}
                 rowKey={(record) => record.code}
                 dataSource={data}
-                pagination={tableParams.pagination}
+                pagination={{
+                    ...tableParams.pagination,
+                    showSizeChanger: true,
+                    pageSizeOptions: ['2', '5', '10', '20'],
+                }}
                 loading={loading}
                 onChange={handleTableChange}
                 scroll={{ x: 'max-content' }}
@@ -361,6 +383,16 @@ const AccsetManagement = () => {
                 onCancel={handleModalCancel}
             >
                 <input type="file" accept=".xlsx, .csv" onChange={handleUploadChange} />
+            </Modal>
+
+            <Modal
+                title="Import thành công"
+                type='success'
+                open={isSuccessModalVisible}
+                onOk={handleSuccessModalOk}
+                onCancel={handleSuccessModalOk}
+            >
+                <p>Số lượng bản ghi: {recordCount}</p>
             </Modal>
         </>
 
