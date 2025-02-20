@@ -144,7 +144,7 @@ const AccsetManagement = () => {
 
     useEffect(() => {
         fetchData();
-    }, [tableParams.pagination.pageSize, tableParams.pagination.pageSize]);
+    }, [tableParams.pagination.current, tableParams.pagination.pageSize]);
     console.log("Data: ", data);
 
     const [exportData, setExportData] = useState(null);
