@@ -1,7 +1,18 @@
+* {
+    box-sizing: border-box;
+}
+
 .grid2 {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 100px;
+    margin: 10px 20px;
+}
+
+.grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 100px;
     margin: 10px 20px;
 }
 
@@ -64,20 +75,13 @@
 .basicInfor {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
+    gap: 100px;
     margin: 10px 30px;
 }
 
 .valuationResult,
 .containerDetailInfor {
     margin: 10px 30px;
-}
-
-.locationDescription {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
-    gap: 20px;
-    margin: 0 20px;
 }
 
 .locationDescription .formItem label {
@@ -101,6 +105,10 @@
     word-wrap: break-word;
     margin-bottom: 15px;
     font-size: 15px !important ;
+}
+
+.locationDescription .formItem label {
+    margin-bottom: 35px;
 }
 
 /* xóa dấu tăng giảm trong input[type=number] */

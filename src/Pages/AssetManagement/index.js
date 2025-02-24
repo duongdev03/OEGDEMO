@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { Table, Input, Select, Button, Space, Modal, message, Menu, Dropdown } from 'antd';
+import { Table, Input, Select, Button, Space, Modal, message, Dropdown } from 'antd';
 import { HomeOutlined, RightOutlined, EllipsisOutlined, FileExcelOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import styles from './AssetManagement.module.css';
 
@@ -42,12 +42,18 @@ const AccsetManagement = () => {
         }
     };
 
-    const menu = (record) => (
-        <Menu onClick={(e) => handleMoreClick(e, record)}>
-            <Menu.Item key="detail">Xem chi tiết</Menu.Item>
-            <Menu.Item key="delete">Xóa</Menu.Item>
-        </Menu>
-    );
+    const menu = (record) => [
+        {
+            key: 'detail',
+            label: 'Xem chi tiết',
+            onClick: (e) => handleMoreClick(e, record),
+        },
+        {
+            key: 'delete',
+            label: 'Xóa',
+            onClick: (e) => handleMoreClick(e, record),
+        },
+    ];
 
 
     const columns = [
@@ -121,7 +127,7 @@ const AccsetManagement = () => {
             dataIndex: 'action',
             width: 50,
             render: (_, record) => (
-                <Dropdown overlay={menu(record)} trigger={['click']}>
+                <Dropdown menu={{ items: menu(record) }} trigger={['click']}>
                     <EllipsisOutlined className={styles.action} />
                 </Dropdown>
             ),

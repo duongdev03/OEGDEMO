@@ -484,41 +484,67 @@ const AddCollateral = () => {
                             </Form.Item>
                         </div>
                         <div className={styles.locationDescription}>
-                            <Form.Item
-                                className={styles.formItem}
-                                label="Độ rộng mặt ngõ/ hẻm/ đường nội bộ nhỏ nhất (m)"
-                                colon={false}
-                            >
-                                <Input type="number" className={styles.noSpinner} name="landWidthMin" />
-                            </Form.Item>
-                            <Form.Item
-                                className={styles.formItem}
-                                label="Số mặt tiếp giáp"
-                                colon={false}
-                            >
-                                <Input type="number" className={styles.noSpinner} name="numberOfContiguousStreet" />
-                            </Form.Item>
-                            <Form.Item
-                                className={styles.formItem}
-                                label="Loại đường tiếp giáp"
-                                colon={false}
-                            >
-                                <Input type="text" name="contiguousStreetTypeName" />
-                            </Form.Item>
-                            <Form.Item
-                                className={styles.formItem}
-                                label="Kích thước chiều rộng(m)"
-                                colon={false}
-                            >
-                                <Input type="number" className={styles.noSpinner} name="width" />
-                            </Form.Item>
-                            <Form.Item
-                                className={styles.formItem}
-                                label="Kích thước chiều dài(m)"
-                                colon={false}
-                            >
-                                <Input type="number" className={styles.noSpinner} name="length" />
-                            </Form.Item>
+
+                            <div className={styles.grid2}>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Độ rộng mặt ngõ/ hẻm/ đường nội bộ nhỏ nhất(m)"
+                                    colon={false}
+                                    labelCol={{ span: 6 }}
+                                    wrapperCol={{ span: 18 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input type="number" className={styles.noSpinner} name="landWidthMin"/>
+                                </Form.Item>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Số mặt tiếp giáp"
+                                    colon={false}
+                                    labelCol={{ span: 6 }}
+                                    wrapperCol={{ span: 18 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input type="number" className={styles.noSpinner} name="numberOfContiguousStreet"/>
+                                </Form.Item>
+                            </div>
+
+                            <div className={styles.grid3}>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Loại đường tiếp giáp"
+                                    colon={false}
+                                    labelCol={{ span: 9 }}
+                                    wrapperCol={{ span: 15 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input style={{ marginLeft: 12 }} type="text" name="contiguousStreetTypeName"/>
+                                </Form.Item>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Kích thước chiều rộng(m)"
+                                    colon={false}
+                                    labelCol={{ span: 9 }}
+                                    wrapperCol={{ span: 15 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input type="number" className={styles.noSpinner} name="width"/>
+                                </Form.Item>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Kích thước chiều dài(m)"
+                                    colon={false}
+                                    labelCol={{ span: 9 }}
+                                    wrapperCol={{ span: 15 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input type="number" className={styles.noSpinner} name="length"/>
+                                </Form.Item>
+                            </div>
                         </div>
 
                         <div className={styles.grid2}>
