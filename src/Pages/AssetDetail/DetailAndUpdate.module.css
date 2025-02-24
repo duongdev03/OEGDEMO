@@ -1,6 +1,43 @@
-*{
+* {
     box-sizing: border-box;
 }
+
+.grid2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 50px;
+    margin: 10px 20px;
+}
+
+.grid3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 50px;
+    margin: 10px 20px;
+}
+
+.header {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 110px;
+    background-color: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+    padding: 10px 20px;
+    font-family: 'system-ui';
+}
+
+.containerNav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
 .nav {
     display: flex;
 }
@@ -17,43 +54,34 @@
     font-weight: bold;
 }
 
-.nav li:nth-child(3){
+.nav li:nth-child(4) {
     margin-top: 5px;
 }
 
-.nav li:nth-child(3) a{
+.nav li:nth-child(4) a {
     font-size: 15px;
     font-weight: normal;
 }
 
-.timeUpdate{
-    text-align: end;
+.timeUpdate {
+    white-space: nowrap;
     margin-right: 20px;
-    margin-bottom: 20px;
+    font-size: 15px;
 }
+
+.containerBtn {
+    display: flex;
+    justify-content: flex-end; 
+    gap: 8px; 
+    margin-right: 20px;
+}
+
 .additionalInfor,
-.basicInfor{
+.basicInfor {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 30px;
-    margin: 10px 30px;
-}
-
-.valuationResult,
-.containerDetailInfor{
-    margin: 10px 30px;
-}
-
-.coordinates,
-.locationDescription{
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-}
-
-.landValue{
-    display: flex;
-    gap: 20px;
+    gap: 50px;
+    margin: 10px 20px;
 }
 
 .loading {
@@ -82,7 +110,51 @@
     box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
 }
 
+.cardTitle {
+    font-size: 18px;
+}
+
+.formItem label {
+    align-items: flex-start !important;
+    white-space: normal !important;
+    word-wrap: break-word;
+    margin-bottom: 15px;
+    font-size: 15px !important;
+}
+
+/* xóa dấu tăng giảm trong input[type=number] */
+.noSpinner::-webkit-outer-spin-button,
+.noSpinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.noSpinner {
+    -moz-appearance: textfield;
+    /* Firefox */
+}
+
+
+@media (max-width: 1199px) {
+    .locationDescription {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+}
+
 @media (max-width: 767px) {
+
+    .formItem {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .formItem label {
+        flex: none;
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
 
     .nav li a {
         color: black;
@@ -90,34 +162,35 @@
         font-size: 15px;
         font-weight: bold;
     }
-    
-    .nav li:nth-child(3){
+
+    .nav li:nth-child(3) {
         margin-top: 0;
     }
-    
-    .nav li:nth-child(3) a{
+
+    .nav li:nth-child(3) a {
         font-size: 10px;
         font-weight: normal;
     }
-    
-    .timeUpdate{
+
+    .timeUpdate {
         text-align: end;
         margin-right: 20px;
         margin-bottom: 20px;
         font-size: 12px;
     }
-    
+
     .additionalInfor,
-    .basicInfor{
+    .basicInfor {
         grid-template-columns: 1fr;
     }
-    .coordinates,
-    .locationDescription{
-        flex-direction: column;
-    }
-    .landValue{
-        flex-direction: column;
-    }
-    
-}
 
+    .coordinates,
+    .locationDescription {
+        flex-direction: column;
+    }
+
+    .landValue {
+        flex-direction: column;
+    }
+
+}

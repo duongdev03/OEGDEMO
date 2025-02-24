@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import styles from './AddCollateral.module.css';
 
 const { Option } = Select;
+const { TextArea } = Input;
 
 const AddCollateral = () => {
     const [locations, setLocations] = useState([]);  // Lưu toàn bộ dữ liệu tỉnh/thành, quận/huyện, phường/xã
@@ -69,8 +70,8 @@ const AddCollateral = () => {
         Modal[type]({
             title: type === 'success' ? 'thành công' : 'thất bại',
             content: type === 'success' ? 'Lưu thành công' : 'đã có lỗi xảy ra. Lưu thất bại',
-            onOk() {},
-            onCancel() {},
+            onOk() { },
+            onCancel() { },
         });
         setTimeout(() => {
             Modal.destroyAll();
@@ -98,13 +99,16 @@ const AddCollateral = () => {
     return (
         <div>
             <Spin className={styles.loading} spinning={loading}></Spin>
-            <nav>
-                <ul className={styles.nav}>
-                    <li><Link to="/"><HomeOutlined />Trang chủ <RightOutlined /></Link></li>
-                    <li><Link to="/AssetManagement">Quản lý tài sản <RightOutlined /></Link></li>
-                    <li><Link to={`/addCollateral`}>Thêm mới</Link></li>
-                </ul>
-            </nav>
+            <div className={styles.header}>
+                <nav>
+                    <ul className={styles.nav}>
+                        <li><HomeOutlined style={{ fontSize: 20, marginTop: 3 }} /></li>
+                        <li><Link to="/">Trang chủ <RightOutlined /></Link></li>
+                        <li><Link to="/AssetManagement">Quản lý tài sản <RightOutlined /></Link></li>
+                        <li><Link to={`/addCollateral`}>Thêm mới</Link></li>
+                    </ul>
+                </nav>
+            </div>
             <div className={styles.title}>
                 <h3>Thêm mới tài sản đảm bảo</h3>
                 <div className={styles.action}>
@@ -119,55 +123,158 @@ const AddCollateral = () => {
                     display: 'flex',
                 }}
             >
-                <Card style={{ margin: 20 }} title="Thông tin cơ bản" size="small">
+                <Card
+                    style={{ margin: 20 }}
+                    title={<span className={styles.cardTitle}>Thông tin cơ bản</span>}
+                    size="small"
+                >
                     <div className={styles.basicInfor}>
                         <div>
-                            <Form.Item label="Mã tài sản">
-                                <Input type="text" name="assetCode" />
+                            <Form.Item
+                                label="Mã tài sản"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="code" />
                             </Form.Item>
-                            <Form.Item label="Mã chi nhánh">
-                                <Input type="text" name="brandCode" />
+                            <Form.Item
+                                label="Mã chi nhánh"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="maChiNhanh" />
                             </Form.Item>
-                            <Form.Item label="Chi nhánh">
-                                <Input type="text" name="brandName" />
+                            <Form.Item
+                                label="Chi nhánh"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="organizationValuationName" />
                             </Form.Item>
-                            <Form.Item label="Phòng quản lý">
-                                <Input type="text" name="managementRoom" />
+                            <Form.Item
+                                label="Phòng quản lý"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="phongQuanLy" />
                             </Form.Item>
-                            <Form.Item label="Cán bộ định giá gần nhất">
-                                <Input type="text" name="nearestAppraiser" />
+                            <Form.Item
+                                label="Cán bộ định giá gần nhất"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="canBoDinhGia" />
                             </Form.Item>
                         </div>
                         <div>
-                            <Form.Item label="CIF khách hàng vay">
-                                <Input type="text" name="CIFCode" />
+                            <Form.Item
+                                label="CIF khách hàng vay"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="customerCIF" />
                             </Form.Item>
-                            <Form.Item label="Tên khách hàng vay">
+                            <Form.Item
+                                label="Tên khách hàng vay"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="customerName" />
                             </Form.Item>
-                            <Form.Item label="CIF bên đảm bảo">
-                                <Input type="text" name="CIFGuarantor" />
+                            <Form.Item
+                                label="CIF bên đảm bảo"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="ensureCIF" />
                             </Form.Item>
-                            <Form.Item label="Tên chủ tài sản">
+                            <Form.Item
+                                label="Tên chủ tài sản"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="ownerName" />
                             </Form.Item>
                         </div>
                     </div>
                 </Card>
 
-                <Card style={{ margin: 20 }} title="Thông tin bổ sung" size="small">
+                <Card
+                    style={{ margin: 20 }}
+                    title={<span className={styles.cardTitle}>Thông tin bổ sung</span>}
+                    size="small"
+                >
                     <div className={styles.additionalInfor}>
                         <div>
-                            <Form.Item label="Nơi đăng ký GDBĐ">
-                                <Input type="text" name="registrationPlace" />
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Nơi đăng ký GDBĐ"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="noiDangKyGDBD" />
                             </Form.Item>
-                            <Form.Item label="Nơi công chứng">
-                                <Input type="text" name="notaryPlace" />
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Nơi công chứng"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="noiCongChung" />
                             </Form.Item>
-                            <Form.Item label="Tỉnh/ Thành phố">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tỉnh/ Thành phố"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Tỉnh/ Thành phố"
-                                    style={{ width: 200 }}
                                     onChange={handleProvinceChange}
                                     allowClear
                                 >
@@ -176,10 +283,17 @@ const AddCollateral = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Quận/ Huyện">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Quận/ Huyện"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Quận/ Huyện"
-                                    style={{ width: 200 }}
                                     onChange={handleDistrictChange}
                                     allowClear
                                     disabled={!selectedProvince}
@@ -189,10 +303,17 @@ const AddCollateral = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Phường/ Xã">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Phường/ Xã"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Phường/ Xã"
-                                    style={{ width: 200 }}
                                     onChange={(value) => setSelectedDistrict(value)}
                                     allowClear
                                     disabled={!selectedDistrict}
@@ -202,24 +323,63 @@ const AddCollateral = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Số nhà">
-                                <Input type="text" name="houseNumber" />
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Số nhà"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="addressHouseNumberOfficial" />
                             </Form.Item>
-                            <Form.Item label="Tên pháp lý dự án theo GCN (nếu có)">
-                                <Input type="text" name="legalProjectName" />
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tên pháp lý dự án theo GCN:"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="projectNameOfficial" />
                             </Form.Item>
                         </div>
                         <div>
-                            <Form.Item label="Tình trạng tài sản">
-                                <Input type="text" name="assetStatus" />
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tình trạng tài sản"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="assetStateName" />
                             </Form.Item>
-                            <Form.Item label="Tính chất pháp lý">
-                                <Input type="text" name="legalStatus" />
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tính chất pháp lý"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="legalStateName" />
                             </Form.Item>
-                            <Form.Item label="Tỉnh/ Thành phố thực tế">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tỉnh/ Thành phố thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Tỉnh/ Thành phố"
-                                    style={{ width: 200 }}
                                     onChange={handleProvinceChange}
                                     allowClear
                                 >
@@ -228,10 +388,17 @@ const AddCollateral = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Quận/ Huyện thực tế">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Quận/ Huyện thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Quận/ Huyện"
-                                    style={{ width: 200 }}
                                     onChange={handleDistrictChange}
                                     allowClear
                                     disabled={!selectedProvince}
@@ -241,10 +408,17 @@ const AddCollateral = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Phường/ Xã thực tế">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Phường/ Xã thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Phường/ Xã"
-                                    style={{ width: 200 }}
                                     onChange={(value) => setSelectedDistrict(value)}
                                     allowClear
                                     disabled={!selectedDistrict}
@@ -254,116 +428,322 @@ const AddCollateral = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Số nhà thực tế">
-                                <Input type="text" name="actualHouseNumber" />
-                            </Form.Item>
-                            <Form.Item label="Tên thương mại dự án thực tế">
-                                <Input type="text" name="actualProjectName" />
-                            </Form.Item>
-                        </div>
-                    </div>
-                </Card>
-
-                <Card style={{ margin: 20 }} title="Thông tin chi tiết TSĐB" size="small">
-                    <div className={styles.containerDetailInfor}>
-                        <Form.Item label="Số GCN">
-                            <Input type="text" name="certificateNumber" />
-                        </Form.Item>
-                        <Form.Item label="Mặt tiền tiếp giáp">
-                            <Input type="text" name="frontage" />
-                        </Form.Item>
-                        <div className={styles.locationDescription}>
-                            <Form.Item label="Độ rộng mặt ngõ/ hẻm/ đường nội bộ nhỏ nhất (m)">
-                                <Input type="text" name="alleyWidth" />
-                            </Form.Item>
-                            <Form.Item label="Số mặt tiếp giáp">
-                                <Input type="text" name="numberOfFrontages" />
-                            </Form.Item>
-                            <Form.Item label="Loại đường tiếp giáp">
-                                <Input type="text" name="roadType" />
-                            </Form.Item>
-                            <Form.Item label="Kích thước chiều rộng(m)">
-                                <Input type="text" name="width" />
-                            </Form.Item>
-                            <Form.Item label="Kích thước chiều dài(m)">
-                                <Input type="text" name="length" />
-                            </Form.Item>
-                        </div>
-
-                        <Form.Item label="Diện tích sử dụng riêng theo GCN(m2)">
-                            <Input type="text" name="privateArea" />
-                        </Form.Item>
-                        <Form.Item label="Tổng giá trị">
-                            <Input type="text" name="totalValue" />
-                        </Form.Item>
-                        <Form.Item label="Mục đích sử dụng">
-                            <Input type="text" name="usagePurpose" />
-                        </Form.Item>
-                        <Form.Item label="Thời hạn sử dụng">
-                            <Input type="text" name="usageDuration" />
-                        </Form.Item>
-                        <Form.Item label="Diện tích (m2)">
-                            <Input type="text" name="area" />
-                        </Form.Item>
-                        <div className={styles.landValue}>
-                            <Form.Item label="Diện tích tính giá trị (m2)">
-                                <Input type="text" name="valueArea" />
-                            </Form.Item>
-                            <Form.Item label="Đơn giá (đ/m2)">
-                                <Input type="text" name="unitPrice" />
-                            </Form.Item>
-                        </div>
-                        <Form.Item label="Loại công trình">
-                            <Select
-                                placeholder="Chọn loại công trình"
-                                style={{ width: 250 }}
-                                allowClear
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Số nhà thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
                             >
-                                <Option value="1">Nhà ở riêng lẻ</Option>
-                                <Option value="2">Công trình khác</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="Tên công trình">
-                            <Input type="text" name="constructionName" />
-                        </Form.Item>
-                        <Form.Item label="Diện tích sàn CTXD (m2)">
-                            <Input type="text" name="constructionArea" />
-                        </Form.Item>
+                                <Input type="text" name="addressHouseNumberActual" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tên thương mại dự án thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="projectNameActual" />
+                            </Form.Item>
+                        </div>
                     </div>
                 </Card>
 
-                <Card style={{ margin: 20 }} title="Thông tin kết quả định giá" size="small">
+                <Card
+                    style={{ margin: 20 }}
+                    title={<span className={styles.cardTitle}>Thông tin chi tiết TSĐB</span>}
+                    size="small">
+                    <div className={styles.containerDetailInfor}>
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Số GCN"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="certificateNo" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Mặt tiền tiếp giáp"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="frontageTypeName" />
+                            </Form.Item>
+                        </div>
+                        <div className={styles.locationDescription}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Độ rộng mặt ngõ/ hẻm/ đường nội bộ nhỏ nhất (m)"
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="landWidthMin" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Số mặt tiếp giáp"
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="numberOfContiguousStreet" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Loại đường tiếp giáp"
+                                colon={false}
+                            >
+                                <Input type="text" name="contiguousStreetTypeName" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Kích thước chiều rộng(m)"
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="width" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Kích thước chiều dài(m)"
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="length" />
+                            </Form.Item>
+                        </div>
+
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Diện tích sử dụng riêng theo GCN(m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="landAreaPrivate" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tổng giá trị"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input
+                                    type="number" className={styles.noSpinner}
+                                    name="totalValue"
+                                />
+                            </Form.Item>
+                        </div>
+
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Mục đích sử dụng"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="infactPurposeName" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem} label="Thời hạn sử dụng"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="useDuration" />
+                            </Form.Item>
+                        </div>
+
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem} label="Diện tích (m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="purposeArea" />
+                            </Form.Item>
+
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Diện tích tính giá trị (m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="constructionValuationArea" />
+                            </Form.Item>
+                        </div>
+
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Đơn giá (đ/m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input
+                                    type="number" className={styles.noSpinner}
+                                    name="unitPricePurpose"
+                                />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Loại công trình"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="constructionTypeName" />
+                            </Form.Item>
+                        </div>
+
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tên công trình"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="constructionName" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Diện tích sàn CTXD (m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="constructionArea" />
+                            </Form.Item>
+                        </div>
+
+                    </div>
+                </Card>
+
+                <Card
+                    style={{ margin: 20 }}
+                    title={<span className={styles.cardTitle}>Thông tin chi tiết TSĐB</span>}
+                    size="small">
                     <div className={styles.valuationResult}>
-                        <Form.Item label="Ngày thông báo kết quả định giá">
-                            <Input type="text" name="valuationDate" />
-                        </Form.Item>
-                        <div className={styles.coordinates}>
-                            <Form.Item label="Kinh độ">
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Ngày thông báo kết quả định giá"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="valuationDTG" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Lý do không nhập thông tin"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="noInformationReason" />
+                            </Form.Item>
+                        </div>
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Kinh độ"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="longitude" />
                             </Form.Item>
-                            <Form.Item label="Vĩ độ">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Vĩ độ"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="latitude" />
                             </Form.Item>
                         </div>
-                        <Form.Item label="Ghi chú">
-                            <Input type="text" name="notes" />
-                        </Form.Item>
-                        <Form.Item label="Lý do không nhập thông tin">
-                            <Input type="text" name="noInfoReason" />
-                        </Form.Item>
-                        <Form.Item label="Tình trạng hồ sơ trên CLIM">
-                            <Select
-                                placeholder="Tình trạng hồ sơ trên CLIM"
-                                style={{ width: 250 }}
-                                allowClear
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tình trạng hồ sơ trên CLIM"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
                             >
-                                <Option value="1">Đã có đủ hồ sơ</Option>
-                                <Option value="2">Thiếu hồ sơ</Option>
-                            </Select>
-                        </Form.Item>
-                        <Form.Item label="Chi tiết hồ sơ đã scan trên CLIM">
-                            <Input type="text" name="climDetails" />
-                        </Form.Item>
+                                <Input type="text" name="profileCLIMStatus" />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Chi tiết hồ sơ đã scan trên CLIM"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="scannedCLIMStatus" />
+                            </Form.Item>
+                        </div>
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Ghi chú"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <TextArea name="note" />
+                            </Form.Item>
+                        </div>
                     </div>
                 </Card>
             </Space>

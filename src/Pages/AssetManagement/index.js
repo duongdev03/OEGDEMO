@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from "react-router-dom";
-import { Table, Input, Select, Button, Space, Modal, message } from 'antd';
+import { Table, Input, Select, Button, Space, Modal, message, Menu, Dropdown } from 'antd';
 import { HomeOutlined, RightOutlined, EllipsisOutlined, FileExcelOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import styles from './AssetManagement.module.css';
 
@@ -22,7 +22,7 @@ const AccsetManagement = () => {
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
-            pageSize: 2,
+            pageSize: 10,
         },
     });
 
@@ -30,7 +30,24 @@ const AccsetManagement = () => {
     const [file, setFile] = useState(null);
 
     const [recordCount, setRecordCount] = useState(0);
+    const [recordCompleted, setRecordCompleted] = useState(0);
+    const [recordFailed, setRecordError] = useState(0);
     const [isSuccessModalVisible, setIsSuccessModalVisible] = useState(false);
+
+    const handleMoreClick = (e, record) => {
+        if (e.key === 'detail') {
+            navigate(`/AssetDetail/${record.code}`);
+        } else if (e.key === 'delete') {
+            // Handle delete action here
+        }
+    };
+
+    const menu = (record) => (
+        <Menu onClick={(e) => handleMoreClick(e, record)}>
+            <Menu.Item key="detail">Xem chi tiết</Menu.Item>
+            <Menu.Item key="delete">Xóa</Menu.Item>
+        </Menu>
+    );
 
 
     const columns = [
@@ -104,9 +121,9 @@ const AccsetManagement = () => {
             dataIndex: 'action',
             width: 50,
             render: (_, record) => (
-                <div onClick={() => navigate(`/AssetDetail/${record.code}`)}>
+                <Dropdown overlay={menu(record)} trigger={['click']}>
                     <EllipsisOutlined className={styles.action} />
-                </div>
+                </Dropdown>
             ),
         },
     ];
@@ -114,10 +131,10 @@ const AccsetManagement = () => {
 
     const fetchData = (params = {}) => {
         setLoading(true);
-        const { current, pageSize} = tableParams.pagination;
+        const { current, pageSize } = tableParams.pagination;
         fetch('http://192.168.1.163:8080/collateral/find', {
             method: 'POST',
-            body: JSON.stringify({...params, page: current - 1, size: pageSize}),
+            body: JSON.stringify({ ...params, page: current - 1, size: pageSize }),
             headers: {
                 'Content-Type': 'application/json',
             }
@@ -255,6 +272,8 @@ const AccsetManagement = () => {
                 message.success('Tải file lên thành công');
                 setIsModalVisible(false);
                 setFile([]);
+                setRecordCompleted(data.completed);
+                setRecordError(data.failed);
                 setRecordCount(data.total);
                 setIsSuccessModalVisible(true);
                 fetchData();
@@ -287,71 +306,76 @@ const AccsetManagement = () => {
     return (
 
         <>
-            <nav>
-                <ul className={styles.nav}>
-                    <li><Link to="/"><HomeOutlined />Trang chủ <RightOutlined /></Link></li>
-                    <li><Link to="/AssetManagement">Quản lý tài sản</Link></li>
-                </ul>
-            </nav>
+            <div className={styles.header}>
+                <nav>
+                    <ul className={styles.nav}>
+                        <li><HomeOutlined style={{ fontSize: 20, marginTop: 3 }} /></li>
+                        <li><Link to="/">Trang chủ <RightOutlined /></Link></li>
+                        <li><Link to="/AssetManagement">Quản lý tài sản</Link></li>
+                    </ul>
+                </nav>
+            </div>
 
-            <h2 className={styles.title}>Quản lý tài sản đảm bảo</h2>
-            <Space style={{ marginBottom: 16, marginLeft: 30 }} wrap>
-                <Input
-                    placeholder="Mã tài sản BIDV"
-                    style={{ width: 200 }} name='code'
-                    value={searchParams.code}
-                    onChange={handleInputChange}
-                />
-                <Input
-                    placeholder="CIF Khách hàng vay"
-                    style={{ width: 200 }} name='customerCIF'
-                    value={searchParams.customerCIF}
-                    onChange={handleInputChange}
-                />
-                <Select
-                    placeholder="Tính chất pháp lý"
-                    style={{ width: 200 }}
-                    value={searchParams.legalStateName || undefined}
-                    onChange={(value) => handleSelectChange('legalStateName', value)}
-                    allowClear
-                >
-                    <Option value="Đã cấp GCN">Đã cấp GCN</Option>
-                    <Option value="Chưa cấp GCN">Chưa cấp GCN</Option>
-                </Select>
-                <Select
-                    placeholder="Loại công trình"
-                    style={{ width: 200 }}
-                    value={searchParams.constructionTypeName || undefined}
-                    onChange={(value) => handleSelectChange('constructionTypeName', value)}
-                    allowClear
-                >
-                    <Option value="Nhà ở độc lập/riêng lẻ">Nhà ở độc lập/riêng lẻ</Option>
-                    <Option value="nhiều tầng đồng sở hữu">nhiều tầng đồng sở hữu</Option>
-                    <Option value="sử dụng">sử dụng</Option>
-                    <Option value="Nhà biệt thự">Nhà biệt thự</Option>
-                    <Option value="liền kề trong khu đô thị/dự án">liền kề trong khu đô thị/dự án</Option>
-                    <Option value="Căn hộ chung cư">Căn hộ chung cư</Option>
-                    <Option value="Nhà tập thể">Nhà tập thể</Option>
-                    <Option value="Sàn văn phòng">Sàn văn phòng</Option>
-                    <Option value="Toà nhà văn phòng">Toà nhà văn phòng</Option>
-                    <Option value="Toà nhà hỗn hợp">Toà nhà hỗn hợp</Option>
-                    <Option value="Khách sạn">Khách sạn</Option>
-                    <Option value="Nhà xưởng/Cửa hàng/Kho">Nhà xưởng/Cửa hàng/Kho</Option>
-                    <Option value="CTXD khác">CTXD khác</Option>
-                    <Option value="Đất trống">Đất trống</Option>
-                </Select>
-                <Select
-                    placeholder="Tình trạng hồ sơ trên CLIM"
-                    style={{ width: 200 }}
-                    value={searchParams.profileCLIMStatus || undefined}
-                    onChange={(value) => handleSelectChange('profileCLIMStatus', value)}
-                    allowClear
-                >
-                    <Option value="Đã có đầy đủ hồ sơ">Đã có đầy đủ hồ sơ</Option>
-                    <Option value="Thiếu hồ sơ">Thiếu hồ sơ</Option>
-                </Select>
-                <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>Tìm kiếm</Button>
-            </Space>
+            <div className={styles.containerSearch}>
+                <h2 className={styles.title}>Quản lý tài sản đảm bảo</h2>
+                <Space wrap>
+                    <Input
+                        placeholder="Mã tài sản BIDV"
+                        style={{ width: 200 }} name='code'
+                        value={searchParams.code}
+                        onChange={handleInputChange}
+                    />
+                    <Input
+                        placeholder="CIF Khách hàng vay"
+                        style={{ width: 200 }} name='customerCIF'
+                        value={searchParams.customerCIF}
+                        onChange={handleInputChange}
+                    />
+                    <Select
+                        placeholder="Tính chất pháp lý"
+                        style={{ width: 200 }}
+                        value={searchParams.legalStateName || undefined}
+                        onChange={(value) => handleSelectChange('legalStateName', value)}
+                        allowClear
+                    >
+                        <Option value="Đã cấp GCN">Đã cấp GCN</Option>
+                        <Option value="Chưa cấp GCN">Chưa cấp GCN</Option>
+                    </Select>
+                    <Select
+                        placeholder="Loại công trình"
+                        style={{ width: 200 }}
+                        value={searchParams.constructionTypeName || undefined}
+                        onChange={(value) => handleSelectChange('constructionTypeName', value)}
+                        allowClear
+                    >
+                        <Option value="Nhà ở độc lập/riêng lẻ">Nhà ở độc lập/riêng lẻ</Option>
+                        <Option value="nhiều tầng đồng sở hữu">nhiều tầng đồng sở hữu</Option>
+                        <Option value="sử dụng">sử dụng</Option>
+                        <Option value="Nhà biệt thự">Nhà biệt thự</Option>
+                        <Option value="liền kề trong khu đô thị/dự án">liền kề trong khu đô thị/dự án</Option>
+                        <Option value="Căn hộ chung cư">Căn hộ chung cư</Option>
+                        <Option value="Nhà tập thể">Nhà tập thể</Option>
+                        <Option value="Sàn văn phòng">Sàn văn phòng</Option>
+                        <Option value="Toà nhà văn phòng">Toà nhà văn phòng</Option>
+                        <Option value="Toà nhà hỗn hợp">Toà nhà hỗn hợp</Option>
+                        <Option value="Khách sạn">Khách sạn</Option>
+                        <Option value="Nhà xưởng/Cửa hàng/Kho">Nhà xưởng/Cửa hàng/Kho</Option>
+                        <Option value="CTXD khác">CTXD khác</Option>
+                        <Option value="Đất trống">Đất trống</Option>
+                    </Select>
+                    <Select
+                        placeholder="Tình trạng hồ sơ trên CLIM"
+                        style={{ width: 200 }}
+                        value={searchParams.profileCLIMStatus || undefined}
+                        onChange={(value) => handleSelectChange('profileCLIMStatus', value)}
+                        allowClear
+                    >
+                        <Option value="Đã có đầy đủ hồ sơ">Đã có đầy đủ hồ sơ</Option>
+                        <Option value="Thiếu hồ sơ">Thiếu hồ sơ</Option>
+                    </Select>
+                    <Button type="primary" icon={<SearchOutlined />} onClick={handleSearch}>Tìm kiếm</Button>
+                </Space>
+            </div>
             <Space style={{ display: "flex", justifyContent: "flex-end", marginBottom: 16, marginRight: 20 }} wrap>
                 <Button
                     onClick={() => navigate('/addCollateral')}
@@ -363,14 +387,14 @@ const AccsetManagement = () => {
                 <Button icon={<FileExcelOutlined />} onClick={handleImport}>Nhập file</Button>
             </Space>
             <Table
-                style={{margin:20}}
+                style={{ margin: 20 }}
                 columns={columns}
                 rowKey={(record) => record.code}
                 dataSource={data}
                 pagination={{
                     ...tableParams.pagination,
                     showSizeChanger: true,
-                    pageSizeOptions: ['2', '5', '10', '20'],
+                    pageSizeOptions: ['5', '10', '20'],
                 }}
                 loading={loading}
                 onChange={handleTableChange}
@@ -392,7 +416,9 @@ const AccsetManagement = () => {
                 onOk={handleSuccessModalOk}
                 onCancel={handleSuccessModalOk}
             >
-                <p>Số lượng bản ghi: {recordCount}</p>
+                <p>Tổng số lượng bản ghi: {recordCount}</p>
+                <p>Số lượng bản ghi nhập thành công: {recordCompleted}</p>
+                <p>Số lượng bản ghi nhập thất bại: {recordFailed}</p>
             </Modal>
         </>
 

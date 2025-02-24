@@ -1,15 +1,15 @@
 import { Link, useParams } from "react-router-dom";
-import { HomeOutlined, RightOutlined, EditOutlined, HistoryOutlined, SyncOutlined } from '@ant-design/icons';
+import { HomeOutlined, RightOutlined, EditOutlined, HistoryOutlined, SyncOutlined, RollbackOutlined } from '@ant-design/icons';
 import { Button, Card, Space, Input, Form, Modal, Select, Spin } from 'antd';
 import { useState, useEffect } from "react";
 import CurrencyInput from 'react-currency-input-field';
 import styles from './DetailAndUpdate.module.css';
 
 const { Option } = Select;
+const { TextArea } = Input;
 
 const AssetDetail = () => {
     const { code } = useParams();
-
 
     const [basicInfo, setBasicInfo] = useState({});
     const [additionalInfo, setAdditionalInfo] = useState({});
@@ -35,6 +35,9 @@ const AssetDetail = () => {
 
     const [selectedProvince, setSelectedProvince] = useState(null);
     const [selectedDistrict, setSelectedDistrict] = useState(null);
+
+    const [createdDate, setCreatedDate] = useState('');
+    const [modifiedDate, setModifiedDate] = useState('');
 
     // lấy API tỉnh thành và lưu vào localStorage 
     useEffect(() => {
@@ -210,6 +213,9 @@ const AssetDetail = () => {
                 setInitialDetailInfo(detailInfoData);
                 setInitialValuationResult(valuationResultData);
 
+                setCreatedDate(data.createdDate);
+                setModifiedDate(data.modifiedDate);
+
                 const initialProvince = locations.find(item => item.name === additionalInfoData.provinceNameOfficial);
                 if (initialProvince) {
                     setSelectedProvince(initialProvince.id);
@@ -303,20 +309,56 @@ const AssetDetail = () => {
         }
     }, [basicInfo, additionalInfo, detailInfo, valuationResult, initialBasicInfo, initialAdditionalInfo, initialDetailInfo, initialValuationResult, loading]);
 
+    const handleReset = () => {
+        setBasicInfo(initialBasicInfo);
+        setAdditionalInfo(initialAdditionalInfo);
+        setDetailInfo(initialDetailInfo);
+        setValuationResult(initialValuationResult);
+        setIsChanged({
+            basicInfo: false,
+            additionalInfo: false,
+            detailInfo: false,
+            valuationResult: false
+        });
+    };
 
     return (
         <div>
             <Spin className={styles.loading} spinning={loading}></Spin>
-            <nav>
-                <ul className={styles.nav}>
-                    <li><Link to="/"><HomeOutlined />Trang chủ <RightOutlined /></Link></li>
-                    <li><Link to="/AssetManagement">Quản lý tài sản <RightOutlined /></Link></li>
-                    <li><Link to={`/AssetDetail/${code}`}>Chi tiết</Link></li>
-                </ul>
-            </nav>
-
-            <div className={styles.timeUpdate}>
-                <HistoryOutlined /> Ngày tạo: 05/02/2025 | <SyncOutlined style={{ backgroundColor: '#00CCFF', fontSize: 12, padding: 3, color: '#fff', borderRadius: 3 }} /> Cập nhật lần cuối: 07/02/2025
+            <div className={styles.header}>
+                <div className={styles.containerNav}>
+                    <nav>
+                        <ul className={styles.nav}>
+                            <li><HomeOutlined style={{ fontSize: 20, marginTop: 3 }} /></li>
+                            <li><Link to="/">Trang chủ <RightOutlined /></Link></li>
+                            <li><Link to="/AssetManagement">Quản lý tài sản <RightOutlined /></Link></li>
+                            <li><Link to={`/AssetDetail/${code}`}>Chi tiết</Link></li>
+                        </ul>
+                    </nav>
+                    <div className={styles.timeUpdate}>
+                        <HistoryOutlined /> Ngày tạo: {createdDate} |
+                        <SyncOutlined style={{ backgroundColor: '#00CCFF', fontSize: 12, padding: 3, color: '#fff', borderRadius: 3, marginLeft:5 }} />
+                        Cập nhật lần cuối: {modifiedDate}
+                    </div>
+                </div>
+                <div className={styles.containerBtn}>
+                    <Button
+                        className={styles.buttonUpdate}
+                        icon={<EditOutlined />}
+                        type={Object.values(isChanged).some(value => value) ? "primary" : "default"}
+                        disabled={!Object.values(isChanged).some(value => value)}
+                        onClick={() => handleUpdate('all')}>
+                        Cập nhật
+                    </Button>
+                    <Button
+                        className={styles.buttonReset}
+                        icon={<RollbackOutlined />}
+                        type="primary" danger
+                        onClick={handleReset}
+                    >
+                        Reset
+                    </Button>
+                </div>
             </div>
 
             <Space
@@ -326,73 +368,178 @@ const AssetDetail = () => {
                     display: 'flex',
                 }}
             >
-                <Card style={{ margin: 20 }} title="Thông tin cơ bản" size="small"
-                    extra={
-                        <Button
-                            icon={<EditOutlined />}
-                            type={isChanged.basicInfo ? "primary" : "default"}
-                            disabled={!isChanged.basicInfo}
-                            onClick={() => handleUpdate('basicInfo')}>
-                            Cập nhật
-                        </Button>
-                    }>
+                <Card
+                    style={{ margin: 20, marginTop: 150 }}
+                    title={<span className={styles.cardTitle}>Thông tin cơ bản</span>}
+                    size="small"
+                // extra={
+                //     <Button
+                //         icon={<EditOutlined />}
+                //         type={isChanged.basicInfo ? "primary" : "default"}
+                //         disabled={!isChanged.basicInfo}
+                //         onClick={() => handleUpdate('basicInfo')}>
+                //         Cập nhật
+                //     </Button>
+                // }
+                >
                     <div className={styles.basicInfor}>
                         <div>
-                            <Form.Item label="Mã tài sản">
-                                <Input type="text" name="code" value={basicInfo?.code || ''} disabled />
+                            <Form.Item
+                                label="Mã tài sản"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" name="code" value={basicInfo?.code || ''} disabled />
                             </Form.Item>
-                            <Form.Item label="Mã chi nhánh">
-                                <Input type="text" name="maChiNhanh" value={basicInfo.maChiNhanh} onChange={handleBasicInfoChange} />
+                            <Form.Item
+                                label="Mã chi nhánh"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="maChiNhanh" value={basicInfo.maChiNhanh} onChange={handleBasicInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Chi nhánh">
+                            <Form.Item
+                                label="Chi nhánh"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="organizationValuationName" value={basicInfo.organizationValuationName} onChange={handleBasicInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Phòng quản lý">
+                            <Form.Item
+                                label="Phòng quản lý"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="phongQuanLy" value={basicInfo.phongQuanLy} onChange={handleBasicInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Cán bộ định giá gần nhất">
+                            <Form.Item
+                                label="Cán bộ định giá gần nhất"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="canBoDinhGia" value={basicInfo.canBoDinhGia} onChange={handleBasicInfoChange} />
                             </Form.Item>
                         </div>
                         <div>
-                            <Form.Item label="CIF khách hàng vay">
-                                <Input type="text" name="customerCIF" value={basicInfo.customerCIF} onChange={handleBasicInfoChange} />
+                            <Form.Item
+                                label="CIF khách hàng vay"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="customerCIF" value={basicInfo.customerCIF} onChange={handleBasicInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Tên khách hàng vay">
+                            <Form.Item
+                                label="Tên khách hàng vay"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="customerName" value={basicInfo.customerName} onChange={handleBasicInfoChange} />
                             </Form.Item>
-                            <Form.Item label="CIF bên đảm bảo">
-                                <Input type="text" name="ensureCIF" value={basicInfo.ensureCIF} onChange={handleBasicInfoChange} />
+                            <Form.Item
+                                label="CIF bên đảm bảo"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="ensureCIF" value={basicInfo.ensureCIF} onChange={handleBasicInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Tên chủ tài sản">
+                            <Form.Item
+                                label="Tên chủ tài sản"
+                                className={styles.formItem}
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="ownerName" value={basicInfo.ownerName} onChange={handleBasicInfoChange} />
                             </Form.Item>
                         </div>
                     </div>
                 </Card>
 
-                <Card style={{ margin: 20 }} title="Thông tin bổ sung" size="small"
-                    extra={
-                        <Button
-                            icon={<EditOutlined />}
-                            type={isChanged.additionalInfo ? "primary" : "default"}
-                            disabled={!isChanged.additionalInfo}
-                            onClick={() => handleUpdate('additionalInfo')}>
-                            Cập nhật
-                        </Button>
-                    }>
+                <Card
+                    style={{ margin: 20 }}
+                    title={<span className={styles.cardTitle}>Thông tin bổ sung</span>}
+                    size="small"
+
+
+                // extra={
+                //     <Button
+                //         icon={<EditOutlined />}
+                //         type={isChanged.additionalInfo ? "primary" : "default"}
+                //         disabled={!isChanged.additionalInfo}
+                //         onClick={() => handleUpdate('additionalInfo')}>
+                //         Cập nhật
+                //     </Button>
+                // }
+                >
                     <div className={styles.additionalInfor}>
                         <div>
-                            <Form.Item label="Nơi đăng ký GDBĐ">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Nơi đăng ký GDBĐ"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="noiDangKyGDBD" value={additionalInfo.noiDangKyGDBD} onChange={handleAdditionalInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Nơi công chứng">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Nơi công chứng"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="noiCongChung" value={additionalInfo.noiCongChung} onChange={handleAdditionalInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Tỉnh/ Thành phố">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tỉnh/ Thành phố"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Tỉnh/ Thành phố"
-                                    style={{ width: 200 }}
                                     value={additionalInfo.provinceNameOfficial}
                                     onChange={handleProvinceOfficialChange}
                                     allowClear
@@ -402,10 +549,17 @@ const AssetDetail = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Quận/ Huyện">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Quận/ Huyện"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Quận/ Huyện"
-                                    style={{ width: 200 }}
                                     value={additionalInfo.districtNameOfficial}
                                     onChange={handleDistrictOfficialChange}
                                     allowClear
@@ -416,10 +570,17 @@ const AssetDetail = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Phường/ Xã">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Phường/ Xã"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Phường/ Xã"
-                                    style={{ width: 200 }}
                                     value={additionalInfo.townNameOfficial}
                                     onChange={handleWardOfficialChange}
                                     allowClear
@@ -430,24 +591,63 @@ const AssetDetail = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Số nhà">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Số nhà"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="addressHouseNumberOfficial" value={additionalInfo.streetNameOfficial + ", " + additionalInfo.addressHouseNumberOfficial} onChange={handleAdditionalInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Tên pháp lý dự án theo GCN (nếu có)">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tên pháp lý dự án theo GCN:"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="projectNameOfficial" value={additionalInfo.projectNameOfficial} onChange={handleAdditionalInfoChange} />
                             </Form.Item>
                         </div>
                         <div>
-                            <Form.Item label="Tình trạng tài sản">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tình trạng tài sản"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="assetStateName" value={additionalInfo.assetStateName} onChange={handleAdditionalInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Tính chất pháp lý">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tính chất pháp lý"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="legalStateName" value={additionalInfo.legalStateName} onChange={handleAdditionalInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Tỉnh/ Thành phố thực tế">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tỉnh/ Thành phố thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Tỉnh/ Thành phố"
-                                    style={{ width: 200 }}
                                     value={additionalInfo.provinceNameActual}
                                     onChange={handleProvinceActualChange}
                                     allowClear
@@ -457,10 +657,17 @@ const AssetDetail = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Quận/ Huyện thực tế">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Quận/ Huyện thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Quận/ Huyện"
-                                    style={{ width: 200 }}
                                     value={additionalInfo.districtNameActual}
                                     onChange={handleDistrictActualChange}
                                     allowClear
@@ -471,10 +678,17 @@ const AssetDetail = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Phường/ Xã thực tế">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Phường/ Xã thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Select
                                     placeholder="Phường/ Xã"
-                                    style={{ width: 200 }}
                                     value={additionalInfo.townNameActual}
                                     onChange={handleWardActualChange}
                                     allowClear
@@ -485,132 +699,380 @@ const AssetDetail = () => {
                                     ))}
                                 </Select>
                             </Form.Item>
-                            <Form.Item label="Số nhà thực tế">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Số nhà thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="addressHouseNumberActual" value={additionalInfo.streetNameActual + ", " + additionalInfo.addressHouseNumberActual} onChange={handleAdditionalInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Tên thương mại dự án thực tế">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tên thương mại dự án thực tế"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="projectNameActual" value={additionalInfo.projectNameActual} onChange={handleAdditionalInfoChange} />
                             </Form.Item>
                         </div>
                     </div>
                 </Card>
 
-                <Card style={{ margin: 20 }} title="Thông tin chi tiết TSĐB" size="small"
-                    extra={
-                        <Button
-                            icon={<EditOutlined />}
-                            type={isChanged.detailInfo ? "primary" : "default"}
-                            disabled={!isChanged.detailInfo}
-                            onClick={() => handleUpdate('detailInfo')}>
-                            Cập nhật
-                        </Button>
-                    }>
+                <Card
+                    style={{ margin: 20 }}
+                    title={<span className={styles.cardTitle}>Thông tin chi tiết TSĐB</span>}
+                    size="small"
+
+
+                // extra={
+                //     <Button
+                //         icon={<EditOutlined />}
+                //         type={isChanged.detailInfo ? "primary" : "default"}
+                //         disabled={!isChanged.detailInfo}
+                //         onClick={() => handleUpdate('detailInfo')}>
+                //         Cập nhật
+                //     </Button>
+                // }
+                >
                     <div className={styles.containerDetailInfor}>
-                        <Form.Item label="Số GCN">
-                            <Input type="text" name="certificateNo" value={detailInfo.certificateNo} onChange={handleDetailInfoChange} />
-                        </Form.Item>
-                        <Form.Item label="Mặt tiền tiếp giáp">
-                            <Input type="text" name="frontageTypeName" value={detailInfo.frontageTypeName} onChange={handleDetailInfoChange} />
-                        </Form.Item>
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Số GCN"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="certificateNo" value={detailInfo.certificateNo} onChange={handleDetailInfoChange} />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Mặt tiền tiếp giáp"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="frontageTypeName" value={detailInfo.frontageTypeName} onChange={handleDetailInfoChange} />
+                            </Form.Item>
+                        </div>
                         <div className={styles.locationDescription}>
-                            <Form.Item label="Độ rộng mặt ngõ/ hẻm/ đường nội bộ nhỏ nhất (m)">
-                                <Input type="text" name="landWidthMin" value={detailInfo.landWidthMin} onChange={handleDetailInfoChange} />
+
+                            <div className={styles.grid2}>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Độ rộng mặt ngõ/ hẻm/ đường nội bộ nhỏ nhất(m)"
+                                    colon={false}
+                                    labelCol={{ span: 6 }}
+                                    wrapperCol={{ span: 18 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input type="number" className={styles.noSpinner} name="landWidthMin" value={detailInfo.landWidthMin} onChange={handleDetailInfoChange} />
+                                </Form.Item>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Số mặt tiếp giáp"
+                                    colon={false}
+                                    labelCol={{ span: 6 }}
+                                    wrapperCol={{ span: 18 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input type="number" className={styles.noSpinner} name="numberOfContiguousStreet" value={detailInfo.numberOfContiguousStreet} onChange={handleDetailInfoChange} />
+                                </Form.Item>
+                            </div>
+
+                            <div className={styles.grid3}>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Loại đường tiếp giáp"
+                                    colon={false}
+                                    labelCol={{ span: 9 }}
+                                    wrapperCol={{ span: 15 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input style={{marginLeft:6}} type="text" name="contiguousStreetTypeName" value={detailInfo.contiguousStreetTypeName} onChange={handleDetailInfoChange} />
+                                </Form.Item>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Kích thước chiều rộng(m)"
+                                    colon={false}
+                                    labelCol={{ span: 9 }}
+                                    wrapperCol={{ span: 15 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input type="number" className={styles.noSpinner} name="width" value={detailInfo.width} onChange={handleDetailInfoChange} />
+                                </Form.Item>
+                                <Form.Item
+                                    className={styles.formItem}
+                                    label="Kích thước chiều dài(m)"
+                                    colon={false}
+                                    labelCol={{ span: 9 }}
+                                    wrapperCol={{ span: 15 }}
+                                    labelAlign="left"
+                                    labelWrap={true}
+                                >
+                                    <Input type="number" className={styles.noSpinner} name="length" value={detailInfo.length} onChange={handleDetailInfoChange} />
+                                </Form.Item>
+                            </div>
+                        </div>
+
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Diện tích sử dụng riêng theo GCN(m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="landAreaPrivate" value={detailInfo.landAreaPrivate} onChange={handleDetailInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Số mặt tiếp giáp">
-                                <Input type="text" name="numberOfContiguousStreet" value={detailInfo.numberOfContiguousStreet} onChange={handleDetailInfoChange} />
-                            </Form.Item>
-                            <Form.Item label="Loại đường tiếp giáp">
-                                <Input type="text" name="contiguousStreetTypeName" value={detailInfo.contiguousStreetTypeName} onChange={handleDetailInfoChange} />
-                            </Form.Item>
-                            <Form.Item label="Kích thước chiều rộng(m)">
-                                <Input type="text" name="width" value={detailInfo.width} onChange={handleDetailInfoChange} />
-                            </Form.Item>
-                            <Form.Item label="Kích thước chiều dài(m)">
-                                <Input type="text" name="length" value={detailInfo.length} onChange={handleDetailInfoChange} />
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tổng giá trị"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <CurrencyInput
+                                    type="text"
+                                    className={`${styles.currencyInput} ${styles.noSpinner}`}
+                                    name="totalValue"
+                                    value={detailInfo.totalValue}
+                                    decimalsLimit={2}
+                                    onValueChange={(value) => handleDetailInfoChange({ target: { name: 'totalValue', value } })}
+                                />
                             </Form.Item>
                         </div>
 
-                        <Form.Item label="Diện tích sử dụng riêng theo GCN(m2)">
-                            <Input type="text" name="landAreaPrivate" value={detailInfo.landAreaPrivate} onChange={handleDetailInfoChange} />
-                        </Form.Item>
-                        <Form.Item label="Tổng giá trị">
-                            <CurrencyInput
-                                className={styles.currencyInput}
-                                name="totalValue"
-                                value={detailInfo.totalValue}
-                                decimalsLimit={2}
-                                onValueChange={(value) => handleDetailInfoChange({ target: { name: 'totalValue', value } })}
-                            />
-                        </Form.Item>
-                        <Form.Item label="Mục đích sử dụng">
-                            <Input type="text" name="infactPurposeName" value={detailInfo.infactPurposeName} onChange={handleDetailInfoChange} />
-                        </Form.Item>
-                        <Form.Item label="Thời hạn sử dụng">
-                            <Input type="text" name="useDuration" value={detailInfo.useDuration} onChange={handleDetailInfoChange} />
-                        </Form.Item>
-                        <Form.Item label="Diện tích (m2)">
-                            <Input type="text" name="purposeArea" value={detailInfo.purposeArea} onChange={handleDetailInfoChange} />
-                        </Form.Item>
-                        <div className={styles.landValue}>
-                            <Form.Item label="Diện tích tính giá trị (m2)">
-                                <Input type="text" name="constructionValuationArea" value={detailInfo.constructionValuationArea} onChange={handleDetailInfoChange} />
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Mục đích sử dụng"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="infactPurposeName" value={detailInfo.infactPurposeName} onChange={handleDetailInfoChange} />
                             </Form.Item>
-                            <Form.Item label="Đơn giá (đ/m2)">
+                            <Form.Item
+                                className={styles.formItem} label="Thời hạn sử dụng"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="useDuration" value={detailInfo.useDuration} onChange={handleDetailInfoChange} />
+                            </Form.Item>
+                        </div>
+
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem} label="Diện tích (m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="purposeArea" value={detailInfo.purposeArea} onChange={handleDetailInfoChange} />
+                            </Form.Item>
+
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Diện tích tính giá trị (m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="constructionValuationArea" value={detailInfo.constructionValuationArea} onChange={handleDetailInfoChange} />
+                            </Form.Item>
+                        </div>
+
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Đơn giá (đ/m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <CurrencyInput
-                                    className={styles.currencyInput}
+                                    type="text"
+                                    className={`${styles.currencyInput} ${styles.noSpinner}`}
                                     name="unitPricePurpose"
                                     value={detailInfo.unitPricePurpose}
                                     decimalsLimit={2}
                                     onValueChange={(value) => handleDetailInfoChange({ target: { name: 'unitPricePurpose', value } })}
                                 />
                             </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Loại công trình"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="constructionTypeName" value={detailInfo.constructionTypeName} onChange={handleDetailInfoChange} />
+                            </Form.Item>
                         </div>
-                        <Form.Item label="Loại công trình">
-                            <Input type="text" name="constructionTypeName" value={detailInfo.constructionTypeName} onChange={handleDetailInfoChange} />
-                        </Form.Item>
-                        <Form.Item label="Tên công trình">
-                            <Input type="text" name="constructionName" value={detailInfo.constructionName} onChange={handleDetailInfoChange} />
-                        </Form.Item>
-                        <Form.Item label="Diện tích sàn CTXD (m2)">
-                            <Input type="text" name="constructionArea" value={detailInfo.constructionArea} onChange={handleDetailInfoChange} />
-                        </Form.Item>
+
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tên công trình"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="constructionName" value={detailInfo.constructionName} onChange={handleDetailInfoChange} />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Diện tích sàn CTXD (m2)"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="number" className={styles.noSpinner} name="constructionArea" value={detailInfo.constructionArea} onChange={handleDetailInfoChange} />
+                            </Form.Item>
+                        </div>
+
                     </div>
                 </Card>
 
-                <Card style={{ margin: 20 }} title="Thông tin kết quả định giá" size="small"
-                    extra={
-                        <Button
-                            icon={<EditOutlined />}
-                            type={isChanged.valuationResult ? "primary" : "default"}
-                            disabled={!isChanged.valuationResult}
-                            onClick={() => handleUpdate('valuationResult')}>
-                            Cập nhật
-                        </Button>
-                    }>
+                <Card
+                    style={{ margin: 20 }}
+                    title={<span className={styles.cardTitle}>Thông tin chi tiết TSĐB</span>}
+                    size="small"
+
+
+                // extra={
+                //     <Button
+                //         icon={<EditOutlined />}
+                //         type={isChanged.valuationResult ? "primary" : "default"}
+                //         disabled={!isChanged.valuationResult}
+                //         onClick={() => handleUpdate('valuationResult')}>
+                //         Cập nhật
+                //     </Button>
+                // }
+                >
                     <div className={styles.valuationResult}>
-                        <Form.Item label="Ngày thông báo kết quả định giá">
-                            <Input type="text" name="valuationDTG" value={valuationResult.valuationDTG} onChange={handleValuationResultChange} />
-                        </Form.Item>
-                        <div className={styles.coordinates}>
-                            <Form.Item label="Kinh độ">
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Ngày thông báo kết quả định giá"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="valuationDTG" value={valuationResult.valuationDTG} onChange={handleValuationResultChange} />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Lý do không nhập thông tin"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="noInformationReason" value={valuationResult.noInformationReason} onChange={handleValuationResultChange} />
+                            </Form.Item>
+                        </div>
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Kinh độ"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="longitude" value={valuationResult.longitude} onChange={handleValuationResultChange} />
                             </Form.Item>
-                            <Form.Item label="Vĩ độ">
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Vĩ độ"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
                                 <Input type="text" name="latitude" value={valuationResult.latitude} onChange={handleValuationResultChange} />
                             </Form.Item>
                         </div>
-                        <Form.Item label="Ghi chú">
-                            <Input type="text" name="note" value={valuationResult.note} onChange={handleValuationResultChange} />
-                        </Form.Item>
-                        <Form.Item label="Lý do không nhập thông tin">
-                            <Input type="text" name="noInformationReason" value={valuationResult.noInformationReason} onChange={handleValuationResultChange} />
-                        </Form.Item>
-                        <Form.Item label="Tình trạng hồ sơ trên CLIM">
-                            <Input type="text" name="profileCLIMStatus" value={valuationResult.profileCLIMStatus} onChange={handleValuationResultChange} />
-                        </Form.Item>
-                        <Form.Item label="Chi tiết hồ sơ đã scan trên CLIM">
-                            <Input type="text" name="scannedCLIMStatus" value={valuationResult.scannedCLIMStatus} onChange={handleValuationResultChange} />
-                        </Form.Item>
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Tình trạng hồ sơ trên CLIM"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="profileCLIMStatus" value={valuationResult.profileCLIMStatus} onChange={handleValuationResultChange} />
+                            </Form.Item>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Chi tiết hồ sơ đã scan trên CLIM"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <Input type="text" name="scannedCLIMStatus" value={valuationResult.scannedCLIMStatus} onChange={handleValuationResultChange} />
+                            </Form.Item>
+                        </div>
+                        <div className={styles.grid2}>
+                            <Form.Item
+                                className={styles.formItem}
+                                label="Ghi chú"
+                                labelCol={{ span: 6 }}
+                                wrapperCol={{ span: 18 }}
+                                labelAlign="left"
+                                labelWrap={true}
+                                colon={false}
+                            >
+                                <TextArea name="note" value={valuationResult.note} onChange={handleValuationResultChange} />
+                            </Form.Item>
+                        </div>
                     </div>
                 </Card>
             </Space>
