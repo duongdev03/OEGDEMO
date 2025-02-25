@@ -61,66 +61,72 @@ const AssetDetail = () => {
     }, []);
 
     const handleProvinceOfficialChange = (provinceId) => {
+        const province = locations.find(item => item.id === provinceId);
         setSelectedProvince(provinceId);
         setSelectedDistrict(null); // Reset quận/huyện
         setWards([]); // Reset danh sách xã
-        const filteredDistricts = locations.find(item => item.id === provinceId)?.data2 || [];
+        const filteredDistricts = province?.data2 || [];
         setDistricts(filteredDistricts);
         setAssetData((prev) => ({
             ...prev,
-            provinceNameOfficial: provinceId,
-            districtNameOfficial: null,
-            townNameOfficial: null
+            provinceNameOfficial: province?.name || '',
+            districtNameOfficial: '',
+            townNameOfficial: ''
         }));
     };
-
+    
     const handleDistrictOfficialChange = (districtId) => {
+        const district = districts.find(item => item.id === districtId);
         setSelectedDistrict(districtId);
-        const filteredWards = districts.find(item => item.id === districtId)?.data3 || [];
+        const filteredWards = district?.data3 || [];
         setWards(filteredWards);
         setAssetData((prev) => ({
             ...prev,
-            districtNameOfficial: districtId,
-            townNameOfficial: null
+            districtNameOfficial: district?.name || '',
+            townNameOfficial: ''
         }));
     };
-
+    
     const handleWardOfficialChange = (wardId) => {
+        const ward = wards.find(item => item.id === wardId);
         setAssetData((prev) => ({
             ...prev,
-            townNameOfficial: wardId
+            townNameOfficial: ward?.name || ''
         }));
     };
-
+    
     const handleProvinceActualChange = (provinceId) => {
+        const province = locations.find(item => item.id === provinceId);
         setSelectedProvince(provinceId);
         setSelectedDistrict(null); // Reset quận/huyện
         setWards([]); // Reset danh sách xã
-        const filteredDistricts = locations.find(item => item.id === provinceId)?.data2 || [];
+        const filteredDistricts = province?.data2 || [];
         setDistricts(filteredDistricts);
         setAssetData((prev) => ({
             ...prev,
-            provinceNameActual: provinceId,
-            districtNameActual: null,
-            townNameActual: null
+            provinceNameActual: province?.name || '',
+            districtNameActual: '',
+            townNameActual: ''
         }));
     };
-
+    
     const handleDistrictActualChange = (districtId) => {
+        const district = districts.find(item => item.id === districtId);
         setSelectedDistrict(districtId);
-        const filteredWards = districts.find(item => item.id === districtId)?.data3 || [];
+        const filteredWards = district?.data3 || [];
         setWards(filteredWards);
         setAssetData((prev) => ({
             ...prev,
-            districtNameActual: districtId,
-            townNameActual: null
+            districtNameActual: district?.name || '',
+            townNameActual: ''
         }));
     };
-
+    
     const handleWardActualChange = (wardId) => {
+        const ward = wards.find(item => item.id === wardId);
         setAssetData((prev) => ({
             ...prev,
-            townNameActual: wardId
+            townNameActual: ward?.name || ''
         }));
     };
 
@@ -181,8 +187,12 @@ const AssetDetail = () => {
                     note: data.note || '',
                     noInformationReason: data.noInformationReason || '',
                     profileCLIMStatus: data.profileCLIMStatus || '',
-                    scannedCLIMStatus: data.scannedCLIMStatus || ''
+                    scannedCLIMStatus: data.scannedCLIMStatus || '',
+
+                    fullAddressOfficial: data.streetNameOfficial + ', ' + data.addressHouseNumberOfficial || '',
+                    fullAddressActual: data.streetNameActual + ', ' + data.addressHouseNumberActual || ''
                 }
+
 
 
                 setAssetData(assetData);
@@ -216,10 +226,14 @@ const AssetDetail = () => {
 
     const handleInfoChange = (e) => {
         const { name, value } = e.target;
-        setAssetData((prev) => ({
-            ...prev,
-            [name]: value
-        }));
+        setAssetData((prev) => {
+            const updatedData = {
+                ...prev,
+                [name]: value
+            };
+            setIsChanged(JSON.stringify(updatedData) !== JSON.stringify(initialAssetData));
+            return updatedData;
+        });
     };
 
     const showModal = (type) => {
@@ -246,7 +260,32 @@ const AssetDetail = () => {
 
     const handleUpdate = async () => {
         try {
-            const changedFields = getChangedFields(assetData, initialAssetData);
+            const updatedData = { ...assetData };
+
+            // Bóc tách giá trị nếu có dấu phẩy
+            if (updatedData.fullAddressOfficial.includes(',')) {
+                const [streetNameOfficial, ...rest] = updatedData.fullAddressOfficial.split(',');
+                updatedData.streetNameOfficial = streetNameOfficial.trim();
+                updatedData.addressHouseNumberOfficial = rest.join(',').trim();
+            } else {
+                updatedData.streetNameOfficial = '';
+                updatedData.addressHouseNumberOfficial = updatedData.fullAddressOfficial.trim();
+            }
+
+            if (updatedData.fullAddressActual.includes(',')) {
+                const [streetNameActual, ...rest] = updatedData.fullAddressActual.split(',');
+                updatedData.streetNameActual = streetNameActual.trim();
+                updatedData.addressHouseNumberActual = rest.join(',').trim();
+            } else {
+                updatedData.streetNameActual = '';
+                updatedData.addressHouseNumberActual = updatedData.fullAddressActual.trim();
+            }
+
+            // Xóa các trường fullAddressOfficial và fullAddressActual trước khi gửi
+            delete updatedData.fullAddressOfficial;
+            delete updatedData.fullAddressActual;
+
+            const changedFields = getChangedFields(updatedData, initialAssetData);
             if (Object.keys(changedFields).length === 0) {
                 showModal('error');
                 console.error("No fields have been changed.");
@@ -256,7 +295,7 @@ const AssetDetail = () => {
             const raw = JSON.stringify({
                 id: assetData.code,
                 ...changedFields
-            })
+            });
 
             console.log(raw);
 
@@ -269,7 +308,14 @@ const AssetDetail = () => {
             });
             if (response.ok) {
                 showModal('success');
-                setInitialAssetData(assetData);
+                // Cập nhật lại giá trị fullAddressOfficial và fullAddressActual trong assetData
+                const newInitialAssetData = {
+                    ...updatedData,
+                    fullAddressOfficial: `${updatedData.streetNameOfficial}, ${updatedData.addressHouseNumberOfficial}`,
+                    fullAddressActual: `${updatedData.streetNameActual}, ${updatedData.addressHouseNumberActual}`
+                };
+                setAssetData(newInitialAssetData);
+                setInitialAssetData(newInitialAssetData);
                 setIsChanged(false);
             } else {
                 showModal('error');
@@ -550,7 +596,11 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="addressHouseNumberOfficial" value={assetData.streetNameOfficial + ", " + assetData.addressHouseNumberOfficial} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="fullAddressOfficial"
+                                    value={assetData.fullAddressOfficial || ''}
+                                    onChange={handleInfoChange} />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -658,7 +708,11 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="addressHouseNumberActual" value={assetData.streetNameActual + ", " + assetData.addressHouseNumberActual} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="fullAddressActual"
+                                    value={assetData.fullAddressActual || ''}
+                                    onChange={handleInfoChange} />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
