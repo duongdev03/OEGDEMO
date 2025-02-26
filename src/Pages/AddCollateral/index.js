@@ -2,23 +2,29 @@ import { Link, useNavigate } from "react-router-dom";
 import { HomeOutlined, RightOutlined, CloseOutlined, SaveOutlined } from '@ant-design/icons';
 import { Button, Card, Space, Input, Select, Form, Spin, Modal } from 'antd';
 import { useState, useEffect } from "react";
+import CurrencyInput from 'react-currency-input-field';
 import styles from './AddCollateral.module.css';
 
 const { Option } = Select;
 const { TextArea } = Input;
 
 const AddCollateral = () => {
+
+    const [loading, setLoading] = useState(true);
+
+    const [assetData, setAssetData] = useState({});
+
     const [locations, setLocations] = useState([]);  // Lưu toàn bộ dữ liệu tỉnh/thành, quận/huyện, phường/xã
     const [provinces, setProvinces] = useState([]);  // Danh sách tỉnh/thành phố
     const [districts, setDistricts] = useState([]);  // Danh sách quận/huyện (lọc theo tỉnh)
     const [wards, setWards] = useState([]);          // Danh sách phường/xã (lọc theo huyện)
-    const [loading, setLoading] = useState(true);
 
     const [selectedProvince, setSelectedProvince] = useState(null);
     const [selectedDistrict, setSelectedDistrict] = useState(null);
 
     const navigate = useNavigate();
 
+    // lấy API tỉnh thành và lưu vào localStorage 
     useEffect(() => {
         setLoading(true);
         const cachedData = localStorage.getItem("locations");
@@ -51,19 +57,82 @@ const AddCollateral = () => {
         }
     }, []);
 
-    const handleProvinceChange = (provinceId) => {
+    const handleProvinceOfficialChange = (provinceId) => {
+        const province = locations.find(item => item.id === provinceId);
         setSelectedProvince(provinceId);
         setSelectedDistrict(null); // Reset quận/huyện
         setWards([]); // Reset danh sách xã
-        const filteredDistricts = locations.find(item => item.id === provinceId)?.data2 || [];
+        const filteredDistricts = province?.data2 || [];
         setDistricts(filteredDistricts);
+        setAssetData((prev) => ({
+            ...prev,
+            provinceNameOfficial: province?.name || '',
+            districtNameOfficial: '',
+            townNameOfficial: ''
+        }));
+    };
+    
+    const handleDistrictOfficialChange = (districtId) => {
+        const district = districts.find(item => item.id === districtId);
+        setSelectedDistrict(districtId);
+        const filteredWards = district?.data3 || [];
+        setWards(filteredWards);
+        setAssetData((prev) => ({
+            ...prev,
+            districtNameOfficial: district?.name || '',
+            townNameOfficial: ''
+        }));
+    };
+    
+    const handleWardOfficialChange = (wardId) => {
+        const ward = wards.find(item => item.id === wardId);
+        setAssetData((prev) => ({
+            ...prev,
+            townNameOfficial: ward?.name || ''
+        }));
+    };
+    
+    const handleProvinceActualChange = (provinceId) => {
+        const province = locations.find(item => item.id === provinceId);
+        setSelectedProvince(provinceId);
+        setSelectedDistrict(null); // Reset quận/huyện
+        setWards([]); // Reset danh sách xã
+        const filteredDistricts = province?.data2 || [];
+        setDistricts(filteredDistricts);
+        setAssetData((prev) => ({
+            ...prev,
+            provinceNameActual: province?.name || '',
+            districtNameActual: '',
+            townNameActual: ''
+        }));
+    };
+    
+    const handleDistrictActualChange = (districtId) => {
+        const district = districts.find(item => item.id === districtId);
+        setSelectedDistrict(districtId);
+        const filteredWards = district?.data3 || [];
+        setWards(filteredWards);
+        setAssetData((prev) => ({
+            ...prev,
+            districtNameActual: district?.name || '',
+            townNameActual: ''
+        }));
+    };
+    
+    const handleWardActualChange = (wardId) => {
+        const ward = wards.find(item => item.id === wardId);
+        setAssetData((prev) => ({
+            ...prev,
+            townNameActual: ward?.name || ''
+        }));
     };
 
-    const handleDistrictChange = (districtId) => {
-        setSelectedDistrict(districtId);
-        setWards([]); // Reset danh sách xã
-        const filteredWards = districts.find(item => item.id === districtId)?.data3 || [];
-        setWards(filteredWards);
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setAssetData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const showModal = (type) => {
@@ -78,21 +147,50 @@ const AddCollateral = () => {
         }, 2000)
     };
 
-    const handleSave = () => {
-        // Kiểm tra và xác thực dữ liệu đầu vào
-        // Gửi dữ liệu đến server hoặc lưu vào localStorage
-
-        const isSuccess = false;
-        if (isSuccess) {
-            showModal('success');
-        } else {
+    const handleSave = async () => {
+        try {
+            const addData = { ...assetData };
+    
+            // Bóc tách giá trị nếu có dấu phẩy
+            if (addData.addressHouseNumberOfficial.includes(',')) {
+                const [streetNameOfficial, ...rest] = addData.addressHouseNumberOfficial.split(',');
+                addData.streetNameOfficial = streetNameOfficial.trim();
+                addData.addressHouseNumberOfficial = rest.join(',').trim();
+            } else {
+                addData.streetNameOfficial = '';
+                addData.addressHouseNumberOfficial = addData.addressHouseNumberOfficial.trim();
+            }
+    
+            if (addData.addressHouseNumberActual.includes(',')) {
+                const [streetNameActual, ...rest] = addData.addressHouseNumberActual.split(',');
+                addData.streetNameActual = streetNameActual.trim();
+                addData.addressHouseNumberActual = rest.join(',').trim();
+            } else {
+                addData.streetNameActual = '';
+                addData.addressHouseNumberActual = addData.addressHouseNumberActual.trim();
+            }
+    
+            const response = await fetch('http://192.168.1.163:8080/collateral/create-or-update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(addData)
+            });
+    
+            if (response.ok) {
+                showModal('success');
+                setAssetData({}); // Đặt lại trạng thái assetData về giá trị ban đầu
+            } else {
+                showModal('error');
+            }
+        } catch (error) {
+            console.error("Error saving asset detail:", error);
             showModal('error');
         }
     };
 
     const handleCancel = () => {
-        // Đặt lại các trường dữ liệu về giá trị ban đầu
-
         navigate('/AssetManagement');
     };
 
@@ -139,7 +237,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="code" />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="code"
+                                    value={assetData.code || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Mã chi nhánh"
@@ -150,7 +254,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="maChiNhanh" />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="maChiNhanh"
+                                    value={assetData.maChiNhanh || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Chi nhánh"
@@ -161,7 +271,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="organizationValuationName" />
+                                <Input
+                                    type="text"
+                                    name="organizationValuationName"
+                                    value={assetData.organizationValuationName || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Phòng quản lý"
@@ -172,7 +287,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="phongQuanLy" />
+                                <Input
+                                    type="text"
+                                    name="phongQuanLy"
+                                    value={assetData.phongQuanLy || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Cán bộ định giá gần nhất"
@@ -183,7 +303,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="canBoDinhGia" />
+                                <Input
+                                    type="text"
+                                    name="canBoDinhGia"
+                                    value={assetData.canBoDinhGia || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
                         <div>
@@ -196,7 +321,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="customerCIF" />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="customerCIF"
+                                    value={assetData.customerCIF || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Tên khách hàng vay"
@@ -207,7 +338,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="customerName" />
+                                <Input
+                                    type="text"
+                                    name="customerName"
+                                    value={assetData.customerName || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="CIF bên đảm bảo"
@@ -218,7 +354,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="ensureCIF" />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="ensureCIF"
+                                    value={assetData.ensureCIF || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Tên chủ tài sản"
@@ -229,7 +371,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="ownerName" />
+                                <Input
+                                    type="text"
+                                    name="ownerName"
+                                    value={assetData.ownerName || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
                     </div>
@@ -251,7 +398,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="noiDangKyGDBD" />
+                                <Input
+                                    type="text"
+                                    name="noiDangKyGDBD"
+                                    value={assetData.noiDangKyGDBD || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -262,7 +414,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="noiCongChung" />
+                                <Input
+                                    type="text"
+                                    name="noiCongChung"
+                                    value={assetData.noiCongChung || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -275,7 +432,7 @@ const AddCollateral = () => {
                             >
                                 <Select
                                     placeholder="Tỉnh/ Thành phố"
-                                    onChange={handleProvinceChange}
+                                    onChange={handleProvinceOfficialChange}
                                     allowClear
                                 >
                                     {provinces.map(province => (
@@ -294,7 +451,7 @@ const AddCollateral = () => {
                             >
                                 <Select
                                     placeholder="Quận/ Huyện"
-                                    onChange={handleDistrictChange}
+                                    onChange={handleDistrictOfficialChange}
                                     allowClear
                                     disabled={!selectedProvince}
                                 >
@@ -314,7 +471,7 @@ const AddCollateral = () => {
                             >
                                 <Select
                                     placeholder="Phường/ Xã"
-                                    onChange={(value) => setSelectedDistrict(value)}
+                                    onChange={handleWardOfficialChange}
                                     allowClear
                                     disabled={!selectedDistrict}
                                 >
@@ -332,7 +489,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="addressHouseNumberOfficial" />
+                                <Input
+                                    type="text"
+                                    name="addressHouseNumberOfficial"
+                                    placeholder="Nhập tên đường, số nhà. VD: Lê Đức Thọ, 63/57/23..."
+                                    value={assetData.addressHouseNumberOfficial || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -343,7 +506,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="projectNameOfficial" />
+                                <Input
+                                    type="text"
+                                    name="projectNameOfficial"
+                                    value={assetData.projectNameOfficial || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
                         <div>
@@ -356,7 +524,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="assetStateName" />
+                                <Input
+                                    type="text"
+                                    name="assetStateName"
+                                    value={assetData.assetStateName || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -367,7 +540,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="legalStateName" />
+                                <Input
+                                    type="text"
+                                    name="legalStateName"
+                                    value={assetData.legalStateName || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -380,7 +558,7 @@ const AddCollateral = () => {
                             >
                                 <Select
                                     placeholder="Tỉnh/ Thành phố"
-                                    onChange={handleProvinceChange}
+                                    onChange={handleProvinceActualChange}
                                     allowClear
                                 >
                                     {provinces.map(province => (
@@ -399,7 +577,7 @@ const AddCollateral = () => {
                             >
                                 <Select
                                     placeholder="Quận/ Huyện"
-                                    onChange={handleDistrictChange}
+                                    onChange={handleDistrictActualChange}
                                     allowClear
                                     disabled={!selectedProvince}
                                 >
@@ -419,7 +597,7 @@ const AddCollateral = () => {
                             >
                                 <Select
                                     placeholder="Phường/ Xã"
-                                    onChange={(value) => setSelectedDistrict(value)}
+                                    onChange={handleWardActualChange}
                                     allowClear
                                     disabled={!selectedDistrict}
                                 >
@@ -437,7 +615,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="addressHouseNumberActual" />
+                                <Input
+                                    type="text"
+                                    name="addressHouseNumberActual"
+                                    placeholder="Nhập tên đường, số nhà. VD: Lê Đức Thọ, 63/57/23..."
+                                    value={assetData.addressHouseNumberActual || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -448,7 +632,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="projectNameActual" />
+                                <Input
+                                    type="text"
+                                    name="projectNameActual"
+                                    value={assetData.projectNameActual || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
                     </div>
@@ -469,7 +658,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="certificateNo" />
+                                <Input
+                                    type="text"
+                                    name="certificateNo"
+                                    value={assetData.certificateNo || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -480,7 +674,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="frontageTypeName" />
+                                <Input
+                                    type="text"
+                                    name="frontageTypeName"
+                                    value={assetData.frontageTypeName || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
                         <div className={styles.locationDescription}>
@@ -495,7 +694,13 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input type="number" className={styles.noSpinner} name="landWidthMin"/>
+                                    <Input
+                                        type="number"
+                                        className={styles.noSpinner}
+                                        name="landWidthMin"
+                                        value={assetData.landWidthMin || ''}
+                                        onChange={handleInputChange}
+                                    />
                                 </Form.Item>
                                 <Form.Item
                                     className={styles.formItem}
@@ -506,7 +711,13 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input type="number" className={styles.noSpinner} name="numberOfContiguousStreet"/>
+                                    <Input
+                                        type="number"
+                                        className={styles.noSpinner}
+                                        name="numberOfContiguousStreet"
+                                        value={assetData.numberOfContiguousStreet || ''}
+                                        onChange={handleInputChange}
+                                    />
                                 </Form.Item>
                             </div>
 
@@ -520,7 +731,13 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input style={{ marginLeft: 12 }} type="text" name="contiguousStreetTypeName"/>
+                                    <Input
+                                        style={{ marginLeft: 12 }}
+                                        type="text"
+                                        name="contiguousStreetTypeName"
+                                        value={assetData.contiguousStreetTypeName || ''}
+                                        onChange={handleInputChange}
+                                    />
                                 </Form.Item>
                                 <Form.Item
                                     className={styles.formItem}
@@ -531,7 +748,13 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input type="number" className={styles.noSpinner} name="width"/>
+                                    <Input
+                                        type="number"
+                                        className={styles.noSpinner}
+                                        name="width"
+                                        value={assetData.width || ''}
+                                        onChange={handleInputChange}
+                                    />
                                 </Form.Item>
                                 <Form.Item
                                     className={styles.formItem}
@@ -542,7 +765,13 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input type="number" className={styles.noSpinner} name="length"/>
+                                    <Input
+                                        type="number"
+                                        className={styles.noSpinner}
+                                        name="length"
+                                        value={assetData.length || ''}
+                                        onChange={handleInputChange}
+                                    />
                                 </Form.Item>
                             </div>
                         </div>
@@ -557,7 +786,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="landAreaPrivate" />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="landAreaPrivate"
+                                    value={assetData.landAreaPrivate || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -568,9 +803,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="number" className={styles.noSpinner}
+                                <CurrencyInput
+                                    type="text"
+                                    className={`${styles.currencyInput} ${styles.noSpinner}`}
                                     name="totalValue"
+                                    decimalsLimit={2}
+                                    value={assetData.totalValue || ''}
+                                    onValueChange={(value) => handleInputChange({ target: { name: 'totalValue', value } })}
                                 />
                             </Form.Item>
                         </div>
@@ -585,7 +824,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="infactPurposeName" />
+                                <Input
+                                    type="text"
+                                    name="infactPurposeName"
+                                    value={assetData.infactPurposeName || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem} label="Thời hạn sử dụng"
@@ -595,7 +839,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="useDuration" />
+                                <Input
+                                    type="text"
+                                    name="useDuration"
+                                    value={assetData.useDuration || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
 
@@ -608,7 +857,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="purposeArea" />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="purposeArea"
+                                    value={assetData.purposeArea || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
 
                             <Form.Item
@@ -620,7 +875,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="constructionValuationArea" />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="constructionValuationArea"
+                                    value={assetData.constructionValuationArea || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
 
@@ -634,9 +895,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="number" className={styles.noSpinner}
+                                <CurrencyInput
+                                    type="text"
+                                    className={`${styles.currencyInput} ${styles.noSpinner}`}
                                     name="unitPricePurpose"
+                                    decimalsLimit={2}
+                                    value={assetData.unitPricePurpose || ''}
+                                    onValueChange={(value) => handleInputChange({ target: { name: 'unitPricePurpose', value } })}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -648,7 +913,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="constructionTypeName" />
+                                <Input
+                                    type="text"
+                                    name="constructionTypeName"
+                                    value={assetData.constructionTypeName || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
 
@@ -662,7 +932,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="constructionName" />
+                                <Input
+                                    type="text"
+                                    name="constructionName"
+                                    value={assetData.constructionName || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -673,7 +948,13 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="constructionArea" />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="constructionArea"
+                                    value={assetData.constructionArea || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
 
@@ -695,7 +976,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="valuationDTG" />
+                                <Input
+                                    type="text"
+                                    name="valuationDTG"
+                                    value={assetData.valuationDTG || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -706,7 +992,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="noInformationReason" />
+                                <Input
+                                    type="text"
+                                    name="noInformationReason"
+                                    value={assetData.noInformationReason || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
                         <div className={styles.grid2}>
@@ -719,7 +1010,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="longitude" />
+                                <Input
+                                    type="text"
+                                    name="longitude"
+                                    value={assetData.longitude || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -730,7 +1026,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="latitude" />
+                                <Input
+                                    type="text"
+                                    name="latitude"
+                                    value={assetData.latitude || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
                         <div className={styles.grid2}>
@@ -743,7 +1044,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="profileCLIMStatus" />
+                                <Input
+                                    type="text"
+                                    name="profileCLIMStatus"
+                                    value={assetData.profileCLIMStatus || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -754,7 +1060,12 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="scannedCLIMStatus" />
+                                <Input
+                                    type="text"
+                                    name="scannedCLIMStatus"
+                                    value={assetData.scannedCLIMStatus || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
                         <div className={styles.grid2}>
@@ -767,7 +1078,11 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <TextArea name="note" />
+                                <TextArea
+                                    name="note"
+                                    value={assetData.note || ''}
+                                    onChange={handleInputChange}
+                                />
                             </Form.Item>
                         </div>
                     </div>
