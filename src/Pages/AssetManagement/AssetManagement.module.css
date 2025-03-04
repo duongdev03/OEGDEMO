@@ -48,6 +48,18 @@
   font-size: 20px;
 }
 
+/* xóa dấu tăng giảm trong input[type=number] */
+.noSpinner::-webkit-outer-spin-button,
+.noSpinner::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.noSpinner {
+    -moz-appearance: textfield;
+    /* Firefox */
+}
+
 @media (max-width: 767px) {
   .nav li a {
     color: black;

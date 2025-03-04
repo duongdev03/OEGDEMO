@@ -135,6 +135,15 @@ const AddCollateral = () => {
         }));
     };
 
+    const handleTrimOnBlur = (e) => {
+        const { name, value } = e.target;
+        setAssetData((prev) => ({
+            ...prev,
+            // Loại bỏ khoảng trắng đầu & cuối khi và null nếu là giá trị '' mất focus
+            [name]: value.trim() === "" ? null : value.trim(), 
+        }));
+    };
+
     const showModal = (type) => {
         Modal[type]({
             title: type === 'success' ? 'thành công' : 'thất bại',
@@ -243,6 +252,8 @@ const AddCollateral = () => {
                                     name="code"
                                     value={assetData.code || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -260,6 +271,7 @@ const AddCollateral = () => {
                                     name="maChiNhanh"
                                     value={assetData.maChiNhanh || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -276,6 +288,8 @@ const AddCollateral = () => {
                                     name="organizationValuationName"
                                     value={assetData.organizationValuationName || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -292,6 +306,7 @@ const AddCollateral = () => {
                                     name="phongQuanLy"
                                     value={assetData.phongQuanLy || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -308,6 +323,7 @@ const AddCollateral = () => {
                                     name="canBoDinhGia"
                                     value={assetData.canBoDinhGia || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                         </div>
@@ -327,6 +343,8 @@ const AddCollateral = () => {
                                     name="customerCIF"
                                     value={assetData.customerCIF || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -343,6 +361,8 @@ const AddCollateral = () => {
                                     name="customerName"
                                     value={assetData.customerName || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -360,6 +380,8 @@ const AddCollateral = () => {
                                     name="ensureCIF"
                                     value={assetData.ensureCIF || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -376,6 +398,8 @@ const AddCollateral = () => {
                                     name="ownerName"
                                     value={assetData.ownerName || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                         </div>
@@ -403,6 +427,7 @@ const AddCollateral = () => {
                                     name="noiDangKyGDBD"
                                     value={assetData.noiDangKyGDBD || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -419,6 +444,7 @@ const AddCollateral = () => {
                                     name="noiCongChung"
                                     value={assetData.noiCongChung || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -495,6 +521,8 @@ const AddCollateral = () => {
                                     placeholder="Nhập tên đường, số nhà. VD: Lê Đức Thọ, 63/57/23..."
                                     value={assetData.addressHouseNumberOfficial || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -511,6 +539,8 @@ const AddCollateral = () => {
                                     name="projectNameOfficial"
                                     value={assetData.projectNameOfficial || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                         </div>
@@ -529,6 +559,8 @@ const AddCollateral = () => {
                                     name="assetStateName"
                                     value={assetData.assetStateName || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -545,6 +577,8 @@ const AddCollateral = () => {
                                     name="legalStateName"
                                     value={assetData.legalStateName || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -621,6 +655,8 @@ const AddCollateral = () => {
                                     placeholder="Nhập tên đường, số nhà. VD: Lê Đức Thọ, 63/57/23..."
                                     value={assetData.addressHouseNumberActual || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -637,6 +673,8 @@ const AddCollateral = () => {
                                     name="projectNameActual"
                                     value={assetData.projectNameActual || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                         </div>
@@ -663,6 +701,8 @@ const AddCollateral = () => {
                                     name="certificateNo"
                                     value={assetData.certificateNo || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -679,6 +719,8 @@ const AddCollateral = () => {
                                     name="frontageTypeName"
                                     value={assetData.frontageTypeName || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                         </div>
@@ -700,6 +742,8 @@ const AddCollateral = () => {
                                         name="landWidthMin"
                                         value={assetData.landWidthMin || ''}
                                         onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                     />
                                 </Form.Item>
                                 <Form.Item
@@ -717,6 +761,8 @@ const AddCollateral = () => {
                                         name="numberOfContiguousStreet"
                                         value={assetData.numberOfContiguousStreet || ''}
                                         onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                     />
                                 </Form.Item>
                             </div>
@@ -737,6 +783,8 @@ const AddCollateral = () => {
                                         name="contiguousStreetTypeName"
                                         value={assetData.contiguousStreetTypeName || ''}
                                         onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                     />
                                 </Form.Item>
                                 <Form.Item
@@ -754,6 +802,8 @@ const AddCollateral = () => {
                                         name="width"
                                         value={assetData.width || ''}
                                         onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                     />
                                 </Form.Item>
                                 <Form.Item
@@ -771,6 +821,8 @@ const AddCollateral = () => {
                                         name="length"
                                         value={assetData.length || ''}
                                         onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                     />
                                 </Form.Item>
                             </div>
@@ -792,6 +844,8 @@ const AddCollateral = () => {
                                     name="landAreaPrivate"
                                     value={assetData.landAreaPrivate || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -829,6 +883,8 @@ const AddCollateral = () => {
                                     name="infactPurposeName"
                                     value={assetData.infactPurposeName || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -844,6 +900,8 @@ const AddCollateral = () => {
                                     name="useDuration"
                                     value={assetData.useDuration || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                         </div>
@@ -863,6 +921,8 @@ const AddCollateral = () => {
                                     name="purposeArea"
                                     value={assetData.purposeArea || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
 
@@ -881,6 +941,8 @@ const AddCollateral = () => {
                                     name="constructionValuationArea"
                                     value={assetData.constructionValuationArea || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                         </div>
@@ -918,6 +980,8 @@ const AddCollateral = () => {
                                     name="constructionTypeName"
                                     value={assetData.constructionTypeName || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                         </div>
@@ -937,6 +1001,8 @@ const AddCollateral = () => {
                                     name="constructionName"
                                     value={assetData.constructionName || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -954,6 +1020,8 @@ const AddCollateral = () => {
                                     name="constructionArea"
                                     value={assetData.constructionArea || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                         </div>
@@ -981,6 +1049,7 @@ const AddCollateral = () => {
                                     name="valuationDTG"
                                     value={assetData.valuationDTG || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -997,6 +1066,7 @@ const AddCollateral = () => {
                                     name="noInformationReason"
                                     value={assetData.noInformationReason || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                         </div>
@@ -1015,6 +1085,8 @@ const AddCollateral = () => {
                                     name="longitude"
                                     value={assetData.longitude || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -1031,6 +1103,8 @@ const AddCollateral = () => {
                                     name="latitude"
                                     value={assetData.latitude || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
+                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
                                 />
                             </Form.Item>
                         </div>
@@ -1049,6 +1123,7 @@ const AddCollateral = () => {
                                     name="profileCLIMStatus"
                                     value={assetData.profileCLIMStatus || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                             <Form.Item
@@ -1065,6 +1140,7 @@ const AddCollateral = () => {
                                     name="scannedCLIMStatus"
                                     value={assetData.scannedCLIMStatus || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                         </div>
@@ -1082,6 +1158,7 @@ const AddCollateral = () => {
                                     name="note"
                                     value={assetData.note || ''}
                                     onChange={handleInputChange}
+                                    onBlur={handleTrimOnBlur}
                                 />
                             </Form.Item>
                         </div>

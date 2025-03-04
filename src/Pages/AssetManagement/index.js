@@ -326,13 +326,17 @@ const AccsetManagement = () => {
                 <h2 className={styles.title}>Quản lý tài sản đảm bảo</h2>
                 <Space wrap>
                     <Input
+                        type='number'
                         placeholder="Mã tài sản BIDV"
+                        className={styles.noSpinner}
                         style={{ width: 200 }} name='code'
                         value={searchParams.code}
                         onChange={handleInputChange}
                     />
                     <Input
+                        type='number'
                         placeholder="CIF Khách hàng vay"
+                        className={styles.noSpinner}
                         style={{ width: 200 }} name='customerCIF'
                         value={searchParams.customerCIF}
                         onChange={handleInputChange}

@@ -74,7 +74,7 @@ const AssetDetail = () => {
             townNameOfficial: ''
         }));
     };
-    
+
     const handleDistrictOfficialChange = (districtId) => {
         const district = districts.find(item => item.id === districtId);
         setSelectedDistrict(districtId);
@@ -86,7 +86,7 @@ const AssetDetail = () => {
             townNameOfficial: ''
         }));
     };
-    
+
     const handleWardOfficialChange = (wardId) => {
         const ward = wards.find(item => item.id === wardId);
         setAssetData((prev) => ({
@@ -94,7 +94,7 @@ const AssetDetail = () => {
             townNameOfficial: ward?.name || ''
         }));
     };
-    
+
     const handleProvinceActualChange = (provinceId) => {
         const province = locations.find(item => item.id === provinceId);
         setSelectedProvince(provinceId);
@@ -109,7 +109,7 @@ const AssetDetail = () => {
             townNameActual: ''
         }));
     };
-    
+
     const handleDistrictActualChange = (districtId) => {
         const district = districts.find(item => item.id === districtId);
         setSelectedDistrict(districtId);
@@ -121,7 +121,7 @@ const AssetDetail = () => {
             townNameActual: ''
         }));
     };
-    
+
     const handleWardActualChange = (wardId) => {
         const ward = wards.find(item => item.id === wardId);
         setAssetData((prev) => ({
@@ -234,6 +234,14 @@ const AssetDetail = () => {
             setIsChanged(JSON.stringify(updatedData) !== JSON.stringify(initialAssetData));
             return updatedData;
         });
+    };
+
+    const handleTrimOnBlur = (e) => {
+        const { name, value } = e.target;
+        setAssetData((prev) => ({
+            ...prev,
+            [name]: value.trim(), // Loại bỏ khoảng trắng đầu & cuối khi mất focus
+        }));
     };
 
     const showModal = (type) => {
@@ -411,7 +419,14 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="maChiNhanh" value={assetData.maChiNhanh} onChange={handleInfoChange} />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="maChiNhanh"
+                                    value={assetData.maChiNhanh}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Chi nhánh"
@@ -422,7 +437,12 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="organizationValuationName" value={assetData.organizationValuationName} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="organizationValuationName"
+                                    value={assetData.organizationValuationName}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur} />
                             </Form.Item>
                             <Form.Item
                                 label="Phòng quản lý"
@@ -433,7 +453,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="phongQuanLy" value={assetData.phongQuanLy} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="phongQuanLy"
+                                    value={assetData.phongQuanLy}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Cán bộ định giá gần nhất"
@@ -444,7 +470,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="canBoDinhGia" value={assetData.canBoDinhGia} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="canBoDinhGia"
+                                    value={assetData.canBoDinhGia}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                         </div>
                         <div>
@@ -457,7 +489,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="customerCIF" value={assetData.customerCIF} onChange={handleInfoChange} />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="customerCIF"
+                                    value={assetData.customerCIF}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur} />
                             </Form.Item>
                             <Form.Item
                                 label="Tên khách hàng vay"
@@ -468,7 +506,12 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="customerName" value={assetData.customerName} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="customerName"
+                                    value={assetData.customerName}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur} />
                             </Form.Item>
                             <Form.Item
                                 label="CIF bên đảm bảo"
@@ -479,7 +522,14 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="ensureCIF" value={assetData.ensureCIF} onChange={handleInfoChange} />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="ensureCIF"
+                                    value={assetData.ensureCIF}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 label="Tên chủ tài sản"
@@ -490,7 +540,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="ownerName" value={assetData.ownerName} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="ownerName"
+                                    value={assetData.ownerName}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                         </div>
                     </div>
@@ -512,7 +568,12 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="noiDangKyGDBD" value={assetData.noiDangKyGDBD} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="noiDangKyGDBD"
+                                    value={assetData.noiDangKyGDBD}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur} />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -523,7 +584,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="noiCongChung" value={assetData.noiCongChung} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="noiCongChung"
+                                    value={assetData.noiCongChung}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -600,7 +667,7 @@ const AssetDetail = () => {
                                     type="text"
                                     name="fullAddressOfficial"
                                     value={assetData.fullAddressOfficial || ''}
-                                    onChange={handleInfoChange} />
+                                    onChange={handleInfoChange} onBlur={handleTrimOnBlur} />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -611,7 +678,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="projectNameOfficial" value={assetData.projectNameOfficial} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="projectNameOfficial"
+                                    value={assetData.projectNameOfficial}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                         </div>
                         <div>
@@ -624,7 +697,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="assetStateName" value={assetData.assetStateName} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="assetStateName"
+                                    value={assetData.assetStateName}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -635,7 +714,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="legalStateName" value={assetData.legalStateName} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="legalStateName"
+                                    value={assetData.legalStateName}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -712,7 +797,7 @@ const AssetDetail = () => {
                                     type="text"
                                     name="fullAddressActual"
                                     value={assetData.fullAddressActual || ''}
-                                    onChange={handleInfoChange} />
+                                    onChange={handleInfoChange} onBlur={handleTrimOnBlur} />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -723,7 +808,12 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="projectNameActual" value={assetData.projectNameActual} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="projectNameActual"
+                                    value={assetData.projectNameActual}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur} />
                             </Form.Item>
                         </div>
                     </div>
@@ -745,7 +835,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="certificateNo" value={assetData.certificateNo} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="certificateNo"
+                                    value={assetData.certificateNo}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -756,7 +852,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="frontageTypeName" value={assetData.frontageTypeName} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="frontageTypeName"
+                                    value={assetData.frontageTypeName}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                         </div>
                         <div className={styles.locationDescription}>
@@ -771,7 +873,14 @@ const AssetDetail = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input type="number" className={styles.noSpinner} name="landWidthMin" value={assetData.landWidthMin} onChange={handleInfoChange} />
+                                    <Input
+                                        type="number"
+                                        className={styles.noSpinner}
+                                        name="landWidthMin"
+                                        value={assetData.landWidthMin}
+                                        onChange={handleInfoChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
                                 </Form.Item>
                                 <Form.Item
                                     className={styles.formItem}
@@ -782,7 +891,14 @@ const AssetDetail = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input type="number" className={styles.noSpinner} name="numberOfContiguousStreet" value={assetData.numberOfContiguousStreet} onChange={handleInfoChange} />
+                                    <Input
+                                        type="number"
+                                        className={styles.noSpinner}
+                                        name="numberOfContiguousStreet"
+                                        value={assetData.numberOfContiguousStreet}
+                                        onChange={handleInfoChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
                                 </Form.Item>
                             </div>
 
@@ -796,7 +912,14 @@ const AssetDetail = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input style={{ marginLeft: 6 }} type="text" name="contiguousStreetTypeName" value={assetData.contiguousStreetTypeName} onChange={handleInfoChange} />
+                                    <Input
+                                        style={{ marginLeft: 6 }}
+                                        type="text"
+                                        name="contiguousStreetTypeName"
+                                        value={assetData.contiguousStreetTypeName}
+                                        onChange={handleInfoChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
                                 </Form.Item>
                                 <Form.Item
                                     className={styles.formItem}
@@ -807,7 +930,14 @@ const AssetDetail = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input type="number" className={styles.noSpinner} name="width" value={assetData.width} onChange={handleInfoChange} />
+                                    <Input
+                                        type="number"
+                                        className={styles.noSpinner}
+                                        name="width"
+                                        value={assetData.width}
+                                        onChange={handleInfoChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
                                 </Form.Item>
                                 <Form.Item
                                     className={styles.formItem}
@@ -818,7 +948,14 @@ const AssetDetail = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input type="number" className={styles.noSpinner} name="length" value={assetData.length} onChange={handleInfoChange} />
+                                    <Input
+                                        type="number"
+                                        className={styles.noSpinner}
+                                        name="length"
+                                        value={assetData.length}
+                                        onChange={handleInfoChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
                                 </Form.Item>
                             </div>
                         </div>
@@ -833,7 +970,14 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="landAreaPrivate" value={assetData.landAreaPrivate} onChange={handleInfoChange} />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="landAreaPrivate"
+                                    value={assetData.landAreaPrivate}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -865,7 +1009,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="infactPurposeName" value={assetData.infactPurposeName} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="infactPurposeName"
+                                    value={assetData.infactPurposeName}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem} label="Thời hạn sử dụng"
@@ -875,7 +1025,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="useDuration" value={assetData.useDuration} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="useDuration"
+                                    value={assetData.useDuration}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                         </div>
 
@@ -888,7 +1044,14 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="purposeArea" value={assetData.purposeArea} onChange={handleInfoChange} />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="purposeArea"
+                                    value={assetData.purposeArea}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
 
                             <Form.Item
@@ -900,7 +1063,14 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="constructionValuationArea" value={assetData.constructionValuationArea} onChange={handleInfoChange} />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="constructionValuationArea"
+                                    value={assetData.constructionValuationArea}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                         </div>
 
@@ -932,7 +1102,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="constructionTypeName" value={assetData.constructionTypeName} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="constructionTypeName"
+                                    value={assetData.constructionTypeName}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                         </div>
 
@@ -946,7 +1122,13 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="constructionName" value={assetData.constructionName} onChange={handleInfoChange} />
+                                <Input
+                                    type="text"
+                                    name="constructionName"
+                                    value={assetData.constructionName}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -957,7 +1139,14 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="number" className={styles.noSpinner} name="constructionArea" value={assetData.constructionArea} onChange={handleInfoChange} />
+                                <Input
+                                    type="number"
+                                    className={styles.noSpinner}
+                                    name="constructionArea"
+                                    value={assetData.constructionArea}
+                                    onChange={handleInfoChange}
+                                    onBlur={handleTrimOnBlur}
+                                />
                             </Form.Item>
                         </div>
 
@@ -980,7 +1169,7 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="valuationDTG" value={assetData.valuationDTG} onChange={handleInfoChange} />
+                                <Input type="text" name="valuationDTG" value={assetData.valuationDTG} onChange={handleInfoChange} onBlur={handleTrimOnBlur} />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -991,7 +1180,7 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="noInformationReason" value={assetData.noInformationReason} onChange={handleInfoChange} />
+                                <Input type="text" name="noInformationReason" value={assetData.noInformationReason} onChange={handleInfoChange} onBlur={handleTrimOnBlur} />
                             </Form.Item>
                         </div>
                         <div className={styles.grid2}>
@@ -1004,7 +1193,7 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="longitude" value={assetData.longitude} onChange={handleInfoChange} />
+                                <Input type="text" name="longitude" value={assetData.longitude} onChange={handleInfoChange} onBlur={handleTrimOnBlur} />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -1015,7 +1204,7 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="latitude" value={assetData.latitude} onChange={handleInfoChange} />
+                                <Input type="text" name="latitude" value={assetData.latitude} onChange={handleInfoChange} onBlur={handleTrimOnBlur} />
                             </Form.Item>
                         </div>
                         <div className={styles.grid2}>
@@ -1028,7 +1217,7 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="profileCLIMStatus" value={assetData.profileCLIMStatus} onChange={handleInfoChange} />
+                                <Input type="text" name="profileCLIMStatus" value={assetData.profileCLIMStatus} onChange={handleInfoChange} onBlur={handleTrimOnBlur} />
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -1039,7 +1228,7 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input type="text" name="scannedCLIMStatus" value={assetData.scannedCLIMStatus} onChange={handleInfoChange} />
+                                <Input type="text" name="scannedCLIMStatus" value={assetData.scannedCLIMStatus} onChange={handleInfoChange} onBlur={handleTrimOnBlur} />
                             </Form.Item>
                         </div>
                         <div className={styles.grid2}>
@@ -1052,7 +1241,7 @@ const AssetDetail = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <TextArea name="note" value={assetData.note} onChange={handleInfoChange} />
+                                <TextArea name="note" value={assetData.note} onChange={handleInfoChange} onBlur={handleTrimOnBlur} />
                             </Form.Item>
                         </div>
                     </div>
