@@ -119,10 +119,9 @@
     -webkit-appearance: none;
     margin: 0;
 }
-
 .noSpinner {
-    -moz-appearance: textfield;
-    /* Firefox */
+    -moz-appearance: none; /* Firefox */
+    appearance: none; /* Standard */
 }
 
 

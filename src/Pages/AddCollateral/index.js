@@ -71,7 +71,7 @@ const AddCollateral = () => {
             townNameOfficial: ''
         }));
     };
-    
+
     const handleDistrictOfficialChange = (districtId) => {
         const district = districts.find(item => item.id === districtId);
         setSelectedDistrict(districtId);
@@ -83,7 +83,7 @@ const AddCollateral = () => {
             townNameOfficial: ''
         }));
     };
-    
+
     const handleWardOfficialChange = (wardId) => {
         const ward = wards.find(item => item.id === wardId);
         setAssetData((prev) => ({
@@ -91,7 +91,7 @@ const AddCollateral = () => {
             townNameOfficial: ward?.name || ''
         }));
     };
-    
+
     const handleProvinceActualChange = (provinceId) => {
         const province = locations.find(item => item.id === provinceId);
         setSelectedProvince(provinceId);
@@ -106,7 +106,7 @@ const AddCollateral = () => {
             townNameActual: ''
         }));
     };
-    
+
     const handleDistrictActualChange = (districtId) => {
         const district = districts.find(item => item.id === districtId);
         setSelectedDistrict(districtId);
@@ -118,7 +118,7 @@ const AddCollateral = () => {
             townNameActual: ''
         }));
     };
-    
+
     const handleWardActualChange = (wardId) => {
         const ward = wards.find(item => item.id === wardId);
         setAssetData((prev) => ({
@@ -140,7 +140,7 @@ const AddCollateral = () => {
         setAssetData((prev) => ({
             ...prev,
             // Loại bỏ khoảng trắng đầu & cuối khi và null nếu là giá trị '' mất focus
-            [name]: value.trim() === "" ? null : value.trim(), 
+            [name]: value.trim() === "" ? null : value.trim(),
         }));
     };
 
@@ -159,7 +159,7 @@ const AddCollateral = () => {
     const handleSave = async () => {
         try {
             const addData = { ...assetData };
-    
+
             // Bóc tách giá trị nếu có dấu phẩy
             if (addData.addressHouseNumberOfficial.includes(',')) {
                 const [streetNameOfficial, ...rest] = addData.addressHouseNumberOfficial.split(',');
@@ -169,7 +169,7 @@ const AddCollateral = () => {
                 addData.streetNameOfficial = '';
                 addData.addressHouseNumberOfficial = addData.addressHouseNumberOfficial.trim();
             }
-    
+
             if (addData.addressHouseNumberActual.includes(',')) {
                 const [streetNameActual, ...rest] = addData.addressHouseNumberActual.split(',');
                 addData.streetNameActual = streetNameActual.trim();
@@ -178,7 +178,7 @@ const AddCollateral = () => {
                 addData.streetNameActual = '';
                 addData.addressHouseNumberActual = addData.addressHouseNumberActual.trim();
             }
-    
+
             const response = await fetch('http://192.168.1.163:8080/collateral/create-or-update', {
                 method: 'POST',
                 headers: {
@@ -186,7 +186,7 @@ const AddCollateral = () => {
                 },
                 body: JSON.stringify(addData)
             });
-    
+
             if (response.ok) {
                 showModal('success');
                 setAssetData({}); // Đặt lại trạng thái assetData về giá trị ban đầu
@@ -246,15 +246,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="number"
-                                    className={styles.noSpinner}
-                                    name="code"
-                                    value={assetData.code || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="number"
+                                        className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                        name="code"
+                                        value={assetData.code || ''}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 label="Mã chi nhánh"
@@ -283,14 +285,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="organizationValuationName"
-                                    value={assetData.organizationValuationName || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="organizationValuationName"
+                                        value={assetData.organizationValuationName || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 label="Phòng quản lý"
@@ -337,15 +342,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="number"
-                                    className={styles.noSpinner}
-                                    name="customerCIF"
-                                    value={assetData.customerCIF || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="number"
+                                        className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                        name="customerCIF"
+                                        value={assetData.customerCIF || ''}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 label="Tên khách hàng vay"
@@ -356,14 +363,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="customerName"
-                                    value={assetData.customerName || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="customerName"
+                                        className={styles.inputWithAsterisk}
+                                        value={assetData.customerName || ''}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 label="CIF bên đảm bảo"
@@ -374,15 +384,18 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="number"
-                                    className={styles.noSpinner}
-                                    name="ensureCIF"
-                                    value={assetData.ensureCIF || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="number"
+                                        className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                        name="ensureCIF"
+                                        value={assetData.ensureCIF || ''}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
+
                             </Form.Item>
                             <Form.Item
                                 label="Tên chủ tài sản"
@@ -393,14 +406,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="ownerName"
-                                    value={assetData.ownerName || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="ownerName"
+                                        value={assetData.ownerName || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
                     </div>
@@ -460,6 +476,7 @@ const AddCollateral = () => {
                                     placeholder="Tỉnh/ Thành phố"
                                     onChange={handleProvinceOfficialChange}
                                     allowClear
+                                    suffixIcon={<span style={{ color: 'red', fontWeight: 'bold' }}>*</span>}
                                 >
                                     {provinces.map(province => (
                                         <Option key={province.id} value={province.id}>{province.name}</Option>
@@ -479,6 +496,7 @@ const AddCollateral = () => {
                                     placeholder="Quận/ Huyện"
                                     onChange={handleDistrictOfficialChange}
                                     allowClear
+                                    suffixIcon={<span style={{ color: 'red', fontWeight: 'bold' }}>*</span>}
                                     disabled={!selectedProvince}
                                 >
                                     {districts.map((district) => (
@@ -499,6 +517,7 @@ const AddCollateral = () => {
                                     placeholder="Phường/ Xã"
                                     onChange={handleWardOfficialChange}
                                     allowClear
+                                    suffixIcon={<span style={{ color: 'red', fontWeight: 'bold' }}>*</span>}
                                     disabled={!selectedDistrict}
                                 >
                                     {wards.map((ward) => (
@@ -515,15 +534,18 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="addressHouseNumberOfficial"
-                                    placeholder="Nhập tên đường, số nhà. VD: Lê Đức Thọ, 63/57/23..."
-                                    value={assetData.addressHouseNumberOfficial || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="addressHouseNumberOfficial"
+                                        placeholder="Nhập tên đường, số nhà. VD: Lê Đức Thọ, 63/57/23..."
+                                        value={assetData.addressHouseNumberOfficial || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -534,14 +556,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="projectNameOfficial"
-                                    value={assetData.projectNameOfficial || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="projectNameOfficial"
+                                        value={assetData.projectNameOfficial || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
                         <div>
@@ -554,14 +579,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="assetStateName"
-                                    value={assetData.assetStateName || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="assetStateName"
+                                        value={assetData.assetStateName || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -572,14 +600,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="legalStateName"
-                                    value={assetData.legalStateName || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="legalStateName"
+                                        value={assetData.legalStateName || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -613,6 +644,7 @@ const AddCollateral = () => {
                                     placeholder="Quận/ Huyện"
                                     onChange={handleDistrictActualChange}
                                     allowClear
+                                    suffixIcon={<span style={{ color: 'red', fontWeight: 'bold' }}>*</span>}
                                     disabled={!selectedProvince}
                                 >
                                     {districts.map((district) => (
@@ -633,6 +665,7 @@ const AddCollateral = () => {
                                     placeholder="Phường/ Xã"
                                     onChange={handleWardActualChange}
                                     allowClear
+                                    suffixIcon={<span style={{ color: 'red', fontWeight: 'bold' }}>*</span>}
                                     disabled={!selectedDistrict}
                                 >
                                     {wards.map((ward) => (
@@ -649,15 +682,18 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="addressHouseNumberActual"
-                                    placeholder="Nhập tên đường, số nhà. VD: Lê Đức Thọ, 63/57/23..."
-                                    value={assetData.addressHouseNumberActual || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="addressHouseNumberActual"
+                                        placeholder="Nhập tên đường, số nhà. VD: Lê Đức Thọ, 63/57/23..."
+                                        value={assetData.addressHouseNumberActual || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -668,14 +704,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="projectNameActual"
-                                    value={assetData.projectNameActual || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="projectNameActual"
+                                        value={assetData.projectNameActual || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
                     </div>
@@ -696,14 +735,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="certificateNo"
-                                    value={assetData.certificateNo || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="certificateNo"
+                                        value={assetData.certificateNo || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -714,14 +756,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="frontageTypeName"
-                                    value={assetData.frontageTypeName || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="frontageTypeName"
+                                        value={assetData.frontageTypeName || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
                         <div className={styles.locationDescription}>
@@ -736,15 +781,17 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input
-                                        type="number"
-                                        className={styles.noSpinner}
-                                        name="landWidthMin"
-                                        value={assetData.landWidthMin || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={handleTrimOnBlur}
-                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                    />
+                                    <div className={styles.inputWrapper}>
+                                        <Input
+                                            type="number"
+                                            name="landWidthMin"
+                                            value={assetData.landWidthMin || ''}
+                                            className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                            onChange={handleInputChange}
+                                            onBlur={handleTrimOnBlur}
+                                        />
+                                        <span className={styles.asterisk}>*</span>
+                                    </div>
                                 </Form.Item>
                                 <Form.Item
                                     className={styles.formItem}
@@ -755,15 +802,17 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input
-                                        type="number"
-                                        className={styles.noSpinner}
-                                        name="numberOfContiguousStreet"
-                                        value={assetData.numberOfContiguousStreet || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={handleTrimOnBlur}
-                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                    />
+                                    <div className={styles.inputWrapper}>
+                                        <Input
+                                            type="number"
+                                            name="numberOfContiguousStreet"
+                                            value={assetData.numberOfContiguousStreet || ''}
+                                            className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                            onChange={handleInputChange}
+                                            onBlur={handleTrimOnBlur}
+                                        />
+                                        <span className={styles.asterisk}>*</span>
+                                    </div>
                                 </Form.Item>
                             </div>
 
@@ -777,15 +826,18 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input
-                                        style={{ marginLeft: 12 }}
-                                        type="text"
-                                        name="contiguousStreetTypeName"
-                                        value={assetData.contiguousStreetTypeName || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={handleTrimOnBlur}
-                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                    />
+                                    <div className={styles.inputWrapper}>
+                                        <Input
+                                            style={{ marginLeft: 12 }}
+                                            type="text"
+                                            name="contiguousStreetTypeName"
+                                            value={assetData.contiguousStreetTypeName || ''}
+                                            className={styles.noSpinner}
+                                            onChange={handleInputChange}
+                                            onBlur={handleTrimOnBlur}
+                                        />
+                                        <span className={styles.asteriskContiguousStreetTypeName}>*</span>
+                                    </div>
                                 </Form.Item>
                                 <Form.Item
                                     className={styles.formItem}
@@ -796,15 +848,17 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input
-                                        type="number"
-                                        className={styles.noSpinner}
-                                        name="width"
-                                        value={assetData.width || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={handleTrimOnBlur}
-                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                    />
+                                    <div className={styles.inputWrapper}>
+                                        <Input
+                                            type="number"
+                                            name="width"
+                                            value={assetData.width || ''}
+                                            className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                            onChange={handleInputChange}
+                                            onBlur={handleTrimOnBlur}
+                                        />
+                                        <span className={styles.asterisk}>*</span>
+                                    </div>
                                 </Form.Item>
                                 <Form.Item
                                     className={styles.formItem}
@@ -815,15 +869,17 @@ const AddCollateral = () => {
                                     labelAlign="left"
                                     labelWrap={true}
                                 >
-                                    <Input
-                                        type="number"
-                                        className={styles.noSpinner}
-                                        name="length"
-                                        value={assetData.length || ''}
-                                        onChange={handleInputChange}
-                                        onBlur={handleTrimOnBlur}
-                                        suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                    />
+                                    <div className={styles.inputWrapper}>
+                                        <Input
+                                            type="number"
+                                            name="length"
+                                            value={assetData.length || ''}
+                                            className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                            onChange={handleInputChange}
+                                            onBlur={handleTrimOnBlur}
+                                        />
+                                        <span className={styles.asterisk}>*</span>
+                                    </div>
                                 </Form.Item>
                             </div>
                         </div>
@@ -838,15 +894,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="number"
-                                    className={styles.noSpinner}
-                                    name="landAreaPrivate"
-                                    value={assetData.landAreaPrivate || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="number"
+                                        name="landAreaPrivate"
+                                        value={assetData.landAreaPrivate || ''}
+                                        className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -857,14 +915,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <CurrencyInput
-                                    type="text"
-                                    className={`${styles.currencyInput} ${styles.noSpinner}`}
-                                    name="totalValue"
-                                    decimalsLimit={2}
-                                    value={assetData.totalValue || ''}
-                                    onValueChange={(value) => handleInputChange({ target: { name: 'totalValue', value } })}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <CurrencyInput
+                                        type="text"
+                                        className={`${styles.currencyInput} ${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                        name="totalValue"
+                                        decimalsLimit={2}
+                                        value={assetData.totalValue || ''}
+                                        onValueChange={(value) => handleInputChange({ target: { name: 'totalValue', value } })}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
 
@@ -878,14 +939,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="infactPurposeName"
-                                    value={assetData.infactPurposeName || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="infactPurposeName"
+                                        value={assetData.infactPurposeName || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem} label="Thời hạn sử dụng"
@@ -895,14 +959,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="useDuration"
-                                    value={assetData.useDuration || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="useDuration"
+                                        value={assetData.useDuration || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
 
@@ -915,15 +982,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="number"
-                                    className={styles.noSpinner}
-                                    name="purposeArea"
-                                    value={assetData.purposeArea || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="number"
+                                        name="purposeArea"
+                                        value={assetData.purposeArea || ''}
+                                        className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
 
                             <Form.Item
@@ -935,15 +1004,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="number"
-                                    className={styles.noSpinner}
-                                    name="constructionValuationArea"
-                                    value={assetData.constructionValuationArea || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="number"
+                                        name="constructionValuationArea"
+                                        value={assetData.constructionValuationArea || ''}
+                                        className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
 
@@ -957,14 +1028,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <CurrencyInput
-                                    type="text"
-                                    className={`${styles.currencyInput} ${styles.noSpinner}`}
-                                    name="unitPricePurpose"
-                                    decimalsLimit={2}
-                                    value={assetData.unitPricePurpose || ''}
-                                    onValueChange={(value) => handleInputChange({ target: { name: 'unitPricePurpose', value } })}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <CurrencyInput
+                                        type="text"
+                                        className={`${styles.currencyInput} ${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                        name="unitPricePurpose"
+                                        decimalsLimit={2}
+                                        value={assetData.unitPricePurpose || ''}
+                                        onValueChange={(value) => handleInputChange({ target: { name: 'unitPricePurpose', value } })}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -975,14 +1049,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="constructionTypeName"
-                                    value={assetData.constructionTypeName || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="constructionTypeName"
+                                        value={assetData.constructionTypeName || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
 
@@ -996,14 +1073,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="constructionName"
-                                    value={assetData.constructionName || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="constructionName"
+                                        value={assetData.constructionName || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -1014,15 +1094,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="number"
-                                    className={styles.noSpinner}
-                                    name="constructionArea"
-                                    value={assetData.constructionArea || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="number"
+                                        name="constructionArea"
+                                        value={assetData.constructionArea || ''}
+                                        className={`${styles.noSpinner} ${styles.inputWithAsterisk}`}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
 
@@ -1080,14 +1162,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="longitude"
-                                    value={assetData.longitude || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="longitude"
+                                        value={assetData.longitude || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                             <Form.Item
                                 className={styles.formItem}
@@ -1098,14 +1183,17 @@ const AddCollateral = () => {
                                 labelWrap={true}
                                 colon={false}
                             >
-                                <Input
-                                    type="text"
-                                    name="latitude"
-                                    value={assetData.latitude || ''}
-                                    onChange={handleInputChange}
-                                    onBlur={handleTrimOnBlur}
-                                    suffix={<span style={{ color: "red", fontWeight: "bold" }}>*</span>}
-                                />
+                                <div className={styles.inputWrapper}>
+                                    <Input
+                                        type="text"
+                                        name="latitude"
+                                        value={assetData.latitude || ''}
+                                        className={styles.inputWithAsterisk}
+                                        onChange={handleInputChange}
+                                        onBlur={handleTrimOnBlur}
+                                    />
+                                    <span className={styles.asterisk}>*</span>
+                                </div>
                             </Form.Item>
                         </div>
                         <div className={styles.grid2}>

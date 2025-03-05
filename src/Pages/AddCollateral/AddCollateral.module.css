@@ -128,9 +128,41 @@
     -webkit-appearance: none;
     margin: 0;
 }
-
 .noSpinner {
-    -moz-appearance: textfield; /* Firefox */
+    -moz-appearance: none; /* Firefox */
+    appearance: none; /* Standard */
+}
+
+
+
+.inputWrapper {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+}
+
+.inputWithAsterisk {
+    padding-right: 20px;
+}
+
+.asterisk {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: red;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.asteriskContiguousStreetTypeName {
+    position: absolute;
+    right: -2px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: red;
+    font-size: 12px;
+    font-weight: bold;
 }
 
 @media (max-width: 767px) {
